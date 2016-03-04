@@ -1,284 +1,306 @@
-from math import cos, sin, radians, atan, degrees, exp
-from random import random,randrange
+from math import exp
+from random import random, randrange
 import tkinter as tk
 
 
-class Neurone:
-    def __init__(self, liste_poids):
-        self.liste_poids = liste_poids
+class Neuron:
+    def __init__(self, list_weight):
+        self.list_weight = list_weight
 
     def __str__(self):
-        return "id : " + str(id(self)) + " liste des poids" + str(self.liste_poids)
+        return "id : " + str(id(self)) + " list of weight" + str(self.list_weight)
 
-    def output(self, liste_inputs):
-        if len(liste_inputs) != len(self.liste_poids):
-            print('Il y a un problème les inputs n\'on pas la même taille que les poids\n' +
-                  'Le neurone : ' + str(self) + "\n Les inputs : " + str(liste_inputs))
+    def output(self, list_input):
+        if len(list_input) != len(self.list_weight):
+            print("list_input and list_weight don't have the same length" +
+                  'Le neurone : ' + str(self) + "\n Les inputs : " + str(list_input))
             return -1
         res = 0
-        for i in range(len(self.liste_poids)):
-            res += self.liste_poids[i] * liste_inputs[i]
+        for i in range(len(self.list_weight)):
+            res += self.list_weight[i] * list_input[i]
         return 1 / (1 + exp(-res))
 
     def mutation(self):
-        i = randrange(len(self.liste_poids))
-        self.liste_poids[i] = random()
+        i = randrange(len(self.list_weight))
+        self.list_weight[i] = random()
 
 
 class Bot:
-    def __init__(self, listes_neurones, x, y):
-        self.neurones = listes_neurones
-        self.x = x
-        self.y = y
-        self.rayon = 5
-        self.speed = 1000  # en pixel / seconde
-        # self.turn_angle = 180
-        # self.direction = 0  # En radians entre 0 et 2pi
-        self.enemi_delta_x = float("inf")
-        self.enemi_delta_y = float("inf")
-        self.gem_delta_x = float("inf")
-        self.gem_delta_y = float("inf")
-        self.enemi_delta_rayon = float("inf")
-        self.liste_inputs = [self.gem_delta_x, self.gem_delta_y,
-                             self.enemi_delta_x, self.enemi_delta_y, self.enemi_delta_rayon]
-        self.liste_outputs = [0, 0, 0, 0]  # haut / bas / gauche / droite
-        self.sprite = canvas.create_oval(self.x - self.rayon, self.y - self.rayon,
-                                         self.x + self.rayon, self.y + self.rayon, fill='blue')
+    def __init__(self, list_neuron, i, j):
+        self.list_neuron = list_neuron
+        self.i = i
+        self.j = j
+        self.strength = 1
+        self.list_input = [0 for i in range(8)]
+        self.list_output = [0, 0, 0, 0]  # up / down / left / right
+        self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
+                                         (self.i + 1) * square_size, (self.j+1) * square_size,
+                                         fill=int_to_color(self.strength))
 
     def __str__(self):
-        return "id : " + str(id(self)) + " position : x = " + str(self.x) + " ; y = " + str(
-            self.y) + "\n Neurones : " + str(self.neurones)
+        return "id : " + str(id(self)) + " position : i = " + str(self.i) + " ; j = " + str(
+            self.j) + "Strength : " + str(self.strength) + "\n Neurons : " + str(self.list_neuron)
 
-    def afficher(self):
+    def display(self):
         canvas.delete(self.sprite)
-        self.sprite = canvas.create_oval(self.x - self.rayon, self.y - self.rayon,
-                                         self.x + self.rayon, self.y + self.rayon, fill='blue')
+        self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
+                                         (self.i + 1) * square_size, (self.j+1) * square_size,
+                                         fill=int_to_color(self.strength))
 
-    def effacer(self):
+    def erase(self):
         canvas.delete(self.sprite)
 
     def update(self):
         self.update_input()
         self.update_output()
-        self.avancer()
-        self.afficher()
+        self.move()
+        self.display()
 
     def update_input(self):
-        self.detecter_collision_gem()
-        self.detecter_collision_enemi()
-        self.detecter_gem_plus_proche()
-        self.detecter_enemi_plus_proche()
-        self.liste_inputs = [self.gem_delta_x, self.gem_delta_y,
-                             self.enemi_delta_x, self.enemi_delta_y, self.enemi_delta_rayon]
+        self.list_input = [0 for k in range(8)]
+        if self.detect_gem(self.i, self.j - 1) is not None:
+            self.list_input[0] = 1
+        if self.detect_gem(self.i, self.j + 1) is not None:
+            self.list_input[1] = 1
+        if self.detect_gem(self.i - 1, self.j) is not None:
+            self.list_input[2] = 1
+        if self.detect_gem(self.i + 1, self.j) is not None:
+            self.list_input[3] = 1
+        foe = self.detect_foe(self.i, self.j - 1)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[4] = 1
+            else:
+                self.list_input[4] = -1
+        foe = self.detect_foe(self.i, self.j + 1)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[5] = 1
+            else :
+                self.list_input[5] = -1
+        foe =  self.detect_foe(self.i - 1, self.j)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[6] = 1
+            else :
+                self.list_input[6] = -1
+        foe = self.detect_foe(self.i + 1, self.j)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[7] = 1
+            else :
+                self.list_input[7] = -1
 
-    def detecter_collision_gem(self):
-        i = 0
-        while i < len(liste_gems):
-            diam = liste_gems[i]
-            if (diam.x - self.x) ** 2 + (diam.y - self.y) ** 2 <= (self.rayon + diam.rayon)**2:
-                self.rayon += 1
-                diam.effacer()
-                del liste_gems[i]
-            i += 1
+    def detect_gem(self, i, j):
+        k = 0
+        while k < len(list_gem):
+            gem = list_gem[k]
+            if gem.i == i and gem.j == j:
+                return gem
+            k += 1
+        return None
 
-    def detecter_collision_enemi(self):
-        i = 0
-        while i < len(liste_bots):
-            enemi = liste_bots[i]
-            if (enemi.x - self.x) ** 2 + (enemi.y - self.y) ** 2 <= (self.rayon + enemi.rayon)**2 and\
-                            enemi.rayon < self.rayon and\
-                            self != enemi:
-                self.rayon += enemi.rayon
-                enemi.effacer()
-                liste_bots_mort.append(enemi)
-                del liste_bots[i]
-            i += 1
+    def detect_foe(self, i, j):
+        k = 0
+        while k < len(list_bot):
+            foe = list_bot[k]
+            if foe.i == i and foe.j == j and self != foe:
+                return foe
+            k += 1
+        return None
 
     def update_output(self):
-        temp_inputs = self.liste_inputs[:]  # Petit trick pour copier la liste
+        temp_inputs = self.list_input[:]  # Copy the list
         temp_outputs = []
-        for i_couche in range(len(self.neurones)):
-            # Pour chaque couche neuronale
-            for i_neurone in range(len(self.neurones[i_couche])):
-                # Pour chaque neurone dans cette couche
-                temp_outputs.append(self.neurones[i_couche][i_neurone].output(temp_inputs))
-                # On insère dans temp_outputs l'output du neurone self.neurones[i_couche][i_neurone]
-                # avec temp_inputs comme inputs
+        for i_layer in range(len(self.list_neuron)):
+            # for each layer of neurons
+            for i_neuron in range(len(self.list_neuron[i_layer])):
+                # for each neuron in this layer
+                temp_outputs.append(self.list_neuron[i_layer][i_neuron].output(temp_inputs))
+                # we add to temp_outputs the output of the neuron self.list_neuron[i_layer][i_neuron]
+                # with temp_inputs as inputs
             temp_inputs = temp_outputs[:]
             temp_outputs = []
-        self.liste_outputs = temp_inputs[:]
+        self.list_output = temp_inputs[:]
 
-    def avancer(self):
-        # Ancienne version
-        # self.direction = (self.direction - self.liste_outputs[1] * 10 + self.liste_outputs[2] * 10) % 360
-        # self.direction = atan(self.liste_outputs[1]/self.liste_outputs[0])
-        # self.x += self.speed * cos(self.direction) / (fps * self.rayon )
-        # self.y += self.speed * sin(self.direction) / (fps * self.rayon )
+    def move(self):
+        i_max = max_index(self.list_output)
+        if i_max == 0 and self.j > 0:
+            self.j -= 1
+        elif i_max == 1 and self.j < height-1:
+            self.j += 1
+        elif i_max == 2 and self.i > 0:
+            self.i -= 1
+        elif i_max == 3 and self.i < width-1:
+            self.i += 1
 
-        i_max = indice_max(self.liste_outputs)
-        if i_max == 0 and (self.y - (self.speed / (self.rayon * fps))) > 0:
-            self.y -= self.speed / (self.rayon * fps)
-        elif i_max == 1 and (self.y + (self.speed / (self.rayon * fps))) < height:
-            self.y += self.speed / (self.rayon * fps)
-        elif i_max == 2 and (self.x - (self.speed / (self.rayon * fps))) > 0:
-            self.x -= self.speed / (self.rayon * fps)
-        elif i_max == 3 and (self.x + (self.speed / (self.rayon * fps))) < width:
-            self.x += self.speed / (self.rayon * fps)
-
-    def detecter_gem_plus_proche(self):
-        self.gem_delta_x = float("inf")
-        self.gem_delta_y = float("inf")
-        for gem in liste_gems:
-            if (gem.x - self.x) ** 2 + (gem.y - self.y) ** 2 < (self.gem_delta_x ** 2 + self.gem_delta_y ** 2):
-                self.gem_delta_x = (gem.x - self.x)
-                self.gem_delta_y = (gem.y - self.y)
-
-    def detecter_enemi_plus_proche(self):
-        self.enemi_delta_x = float("inf")
-        self.enemi_delta_y = float("inf")
-        for enemi in liste_bots:
-            if (enemi.x - self.x) ** 2 + (enemi.y - self.y) ** 2 < (
-                    self.enemi_delta_x ** 2 + self.enemi_delta_y ** 2) and self != enemi:
-                self.enemi_delta_x = (enemi.x - self.x)
-                self.enemi_delta_y = (enemi.y - self.y)
-                self.enemi_delta_rayon = enemi.rayon - self.rayon
+    def eat(self):
+        gem = self.detect_gem(self.i, self.j)
+        if gem is not None:
+            if self.strength < max_strength:
+                self.strength += 1
+            gem.erase()
+            list_gem.remove(gem)
+        foe = self.detect_foe(self.i, self.j)
+        if foe is not None:
+            if self.strength+5 <= max_strength:
+                self.strength += 5
+            foe.erase()
+            list_dead_bot.append(foe)
+            list_bot.remove(foe)
 
 
 class Gem:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, i, j):
+        self.i = i
+        self.j = j
         self.rayon = 3
-        self.sprite = canvas.create_oval(self.x - self.rayon, self.y - self.rayon, self.x + self.rayon,
-                                         self.y + self.rayon, fill='green')
+        self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
+                                         (self.i + 1) * square_size, (self.j+1) * square_size, fill='green')
 
-    def effacer(self):
+    def erase(self):
         canvas.delete(self.sprite)
 
-def nouvelle_generation():
-    global liste_bots, liste_gems
-    for diam in liste_gems:
-        diam.effacer()
-    liste_gems = []
-    best = selection()
-    for bot in liste_bots:
-        bot.effacer()
-    liste_bots = accoupler(best)
-    for i in range(nbr_gems):
-        liste_gems.append(Gem(random() * width, random() * height))
 
-
-
-
+# Genetic Algorithm
 def selection():
-    trie_bot()
-    return liste_bots[:7]
+    global list_bot
+    list_bot += list_dead_bot
+    bot_sort()
+    return list_bot[:7]
 
-def accoupler(best):
+
+def mate(best):
     res = []
     for k in range(4):
         for i in range(len(best)):
-            temp = randrange(0,len(best))
+            temp = randrange(0, len(best))
             while temp != i:
                 temp = randrange(0,len(best))
             res.append(crossover(best[i], best[temp]))
     return res
 
 
-def crossover(bot1,bot2):
-    listes_neurones=[[],[]]
-    for i_couche in range(len(bot1.neurones)):
+def crossover(bot1, bot2):
+    list_neuron = [[], []]
+    for i_layer in range(len(bot1.list_neuron)):
         nbr_bot1 = 0
         nbr_bot2 = 0
-        for i_neurone in range(len(bot1.neurones[i_couche])):
-            tau = (len(bot1.neurones[i_couche])/2 - nbr_bot1) / (len(bot1.neurones[i_couche]) - (nbr_bot1 + nbr_bot2))
+        for i_neuron in range(len(bot1.list_neuron[i_layer])):
+            tau = (len(bot1.list_neuron[i_layer])/2 - nbr_bot1) / (len(bot1.list_neuron[i_layer]) - (nbr_bot1 + nbr_bot2))
             p = random()
             if p > tau:
-                listes_neurones[i_couche].append(bot2.neurones[i_couche][i_neurone])
+                list_neuron[i_layer].append(bot2.list_neuron[i_layer][i_neuron])
                 nbr_bot2 += 1
             else:
-                listes_neurones[i_couche].append(bot1.neurones[i_couche][i_neurone])
+                list_neuron[i_layer].append(bot1.list_neuron[i_layer][i_neuron])
                 nbr_bot1 += 1
             if random() < 1/9:
-                listes_neurones[i_couche][i_neurone].mutation() # Attention mutation
-    bot3 = Bot(listes_neurones,random()*width,random()*height)
+                list_neuron[i_layer][i_neuron].mutation()     # Attention mutation
+    bot3 = Bot(list_neuron, randrange(width), randrange(height))
     return bot3
 
 
-def trie_bot():
-    global liste_bots
-    for i in range(len(liste_bots)-1):
-        if liste_bots[i].rayon < liste_bots[i+1].rayon:
-            liste_bots[i], liste_bots[i+1] = liste_bots[i+1], liste_bots[i]
+def bot_sort():
+    global list_bot
+    for i in range(len(list_bot)-1):
+        if list_bot[i].strength < list_bot[i+1].strength:
+            list_bot[i], list_bot[i + 1] = list_bot[i + 1], list_bot[i]
             temp = i
-            while temp > 0 and liste_bots[temp].rayon > liste_bots[temp-1].rayon:
-                liste_bots[temp], liste_bots[temp-1] = liste_bots[temp -1], liste_bots[temp]
+            while temp > 0 and list_bot[temp].strength > list_bot[temp-1].strength:
+                list_bot[temp], list_bot[temp - 1] = list_bot[temp - 1], list_bot[temp]
                 temp -= 1
 
-def listes_neurones_random(nbr_inputs, nbr_neurones_cache, nbr_output):
-    res = [[], []]
-    for j in range(nbr_neurones_cache):
-        res[0].append(Neurone(liste_poids_random(nbr_inputs)))
-    for j in range(nbr_output):
-        res[1].append(Neurone(liste_poids_random(nbr_neurones_cache)))
-    return res
-
-
-def liste_poids_random(nbr_input):
-    res = []
-    for i in range(nbr_input):
-        res.append(random())
-    return res
-
-
-def indice_max(liste):
+# Useful stuff
+def max_index(list_int):
     i_max = 0
     maxi = - float('inf')
-    for i in range(len(liste)):
-        if liste[i] > maxi:
+    for i in range(len(list_int)):
+        if list_int[i] > maxi:
             i_max = i
-            maxi = liste[i]
+            maxi = list_int[i]
     return i_max
 
-def start():
-    global liste_bots, liste_gems, restart
-    for diam in liste_gems:
-        diam.effacer()
-    liste_gems = []
-    if restart:
-        for bot in liste_bots:
-            bot.effacer()
-    liste_bots = []
+
+def int_to_color(strength):
+    strength *= 30
+    if strength < 16:
+        return "#FFFF0"+hex(strength)[-1:]
+    else:
+        return "#FFFF"+hex(strength)[-2:]
+
+
+# Generate a new level
+def list_neuron_random(nbr_inputs, nbr_neurones_cache, nbr_neurones_cache_2):
+    res = [[], []]
+    for j in range(nbr_neurones_cache):
+        res[0].append(Neuron(list_weight_random(nbr_inputs)))
+    for j in range(nbr_neurones_cache_2):
+        res[1].append(Neuron(list_weight_random(nbr_neurones_cache)))
+    return res
+
+
+def list_weight_random(nbr_input):
+    res = []
+    for i in range(nbr_input):
+        res.append(random()*2-1)
+    return res
+
+
+def generate_gem():
+    global list_gem
+    for gem in list_gem:
+        gem.erase()
+    list_gem = []
     for i in range(nbr_gems):
-        liste_gems.append(Gem(random() * width, random() * height))
+        list_gem.append(Gem(randrange(width), randrange(height)))
+
+
+def new_generation():
+    global list_bot
+    best = selection()
+    for bot in list_bot:
+        bot.erase()
+    list_bot = mate(best)
+    generate_gem()
+
+
+def start():
+    global list_bot
+    for bot in list_bot:
+            bot.erase()
+    list_bot = []
+    generate_gem()
     for i in range(28):
-        liste_bots.append(Bot(listes_neurones_random(5, 5, 4), random() * width, random() * height))
-    restart = True
+        list_bot.append(Bot(list_neuron_random(8, 8, 4), randrange(width), randrange(height)))
 
-# Variable globales
-width = 1300
-height = 600
-liste_bots = []
-liste_bots_mort = []
-liste_gems = []
-nbr_gems = 600
+# Global Variables
+width = 60      # in square
+height = 60     # in square
+square_size = 10
+list_bot = []
+list_dead_bot = []
+list_gem = []
+nbr_gems = 100
 fps = 30
-restart = False
+max_strength = 30
 
-# Création de l'interface graphique
+# Creation of the graphic interface
 root = tk.Tk()
-canvas = tk.Canvas(root, width=width, height=height, background='white')
+canvas = tk.Canvas(root, width=width*square_size, height=height*square_size, background='white')
 canvas.pack(side="top")
 quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
 quit_button.pack()
-generation_button = tk.Button(root, text="Nouvelle Generation", command=nouvelle_generation)
+generation_button = tk.Button(root, text="Nouvelle Generation", command=new_generation)
 generation_button.pack()
 
 
 # Main
 def main():
-    for bot in liste_bots:
+    for bot in list_bot:
         bot.update()
+    for bot in list_bot:
+        bot.eat()
     root.after(1000 // fps, main)
 
 restart_button = tk.Button(root, text="Restart", command=start)
