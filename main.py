@@ -30,12 +30,10 @@ class Bot:
         self.list_neuron = list_neuron
         self.i = i
         self.j = j
-        self.strength = 1
+        self.strength = 0
         self.list_input = [0 for i in range(8)]
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
-        self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
-                                         (self.i + 1) * square_size, (self.j+1) * square_size,
-                                         fill=int_to_color(self.strength))
+        self.sprite = None
 
     def __str__(self):
         return "id : " + str(id(self)) + " position : i = " + str(self.i) + " ; j = " + str(
@@ -45,7 +43,20 @@ class Bot:
         canvas.delete(self.sprite)
         self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
                                          (self.i + 1) * square_size, (self.j+1) * square_size,
-                                         fill=int_to_color(self.strength))
+                                         fill=self.int_to_color(self.strength))
+
+    @staticmethod
+    def int_to_color(strength):
+        red = strength * 255 // max_strength
+        blue = 255 - red
+        green = 0
+        res = "#"
+        for i in [red, green, blue]:
+            if i < 16:
+                res += "0"+hex(i)[-1:].upper()
+            else:
+                res += hex(i)[-2:].upper()
+        return res
 
     def erase(self):
         canvas.delete(self.sprite)
@@ -78,7 +89,7 @@ class Bot:
                 self.list_input[5] = 1
             else :
                 self.list_input[5] = -1
-        foe =  self.detect_foe(self.i - 1, self.j)
+        foe = self.detect_foe(self.i - 1, self.j)
         if foe is not None:
             if foe.strength < self.strength:
                 self.list_input[6] = 1
@@ -220,14 +231,6 @@ def max_index(list_int):
             i_max = i
             maxi = list_int[i]
     return i_max
-
-
-def int_to_color(strength):
-    strength *= 30
-    if strength < 16:
-        return "#FFFF0"+hex(strength)[-1:]
-    else:
-        return "#FFFF"+hex(strength)[-2:]
 
 
 # Generate a new level
