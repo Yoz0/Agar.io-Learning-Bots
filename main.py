@@ -4,17 +4,17 @@ import tkinter as tk
 
 
 class Neuron:
-    def __init__(self, list_weight):
-        self.list_weight = list_weight
+    def __init__(self, nbr_input):
+        self.list_weight = Neuron.list_weight_random(nbr_input)
 
     def __str__(self):
         return "id : " + str(id(self)) + " list of weight" + str(self.list_weight)
 
     def output(self, list_input):
         if len(list_input) != len(self.list_weight):
-            print("list_input and list_weight don't have the same length" +
-                  'Le neurone : ' + str(self) + "\n Les inputs : " + str(list_input))
-            return -1
+            print("list_input and list_weight don't have the same length\n" +
+                  'The neuron : ' + str(self) + " ; The inputs : " + str(list_input))
+            return None
         res = 0
         for i in range(len(self.list_weight)):
             res += self.list_weight[i] * list_input[i]
@@ -22,7 +22,18 @@ class Neuron:
 
     def mutation(self):
         i = randrange(len(self.list_weight))
-        self.list_weight[i] = random()
+        self.list_weight[i] = Neuron.random_weight()
+
+    @staticmethod
+    def random_weight():
+        return random()*2-1
+
+    @staticmethod
+    def list_weight_random(nbr_input):
+        res = []
+        for i in range(nbr_input):
+            res.append(Neuron.random_weight())
+        return res
 
 
 class Bot:
@@ -58,13 +69,13 @@ class Bot:
 
     def update_input(self):
         self.list_input = [0 for k in range(8)]
-        if self.detect_gem(self.i, self.j - 1) is not None:
+        if Gem.detect_gem(self.i, self.j - 1) is not None:
             self.list_input[0] = 1
-        if self.detect_gem(self.i, self.j + 1) is not None:
+        if Gem.detect_gem(self.i, self.j + 1) is not None:
             self.list_input[1] = 1
-        if self.detect_gem(self.i - 1, self.j) is not None:
+        if Gem.detect_gem(self.i - 1, self.j) is not None:
             self.list_input[2] = 1
-        if self.detect_gem(self.i + 1, self.j) is not None:
+        if Gem.detect_gem(self.i + 1, self.j) is not None:
             self.list_input[3] = 1
         foe = self.detect_foe(self.i, self.j - 1)
         if foe is not None:
@@ -78,7 +89,7 @@ class Bot:
                 self.list_input[5] = 1
             else :
                 self.list_input[5] = -1
-        foe =  self.detect_foe(self.i - 1, self.j)
+        foe = self.detect_foe(self.i - 1, self.j)
         if foe is not None:
             if foe.strength < self.strength:
                 self.list_input[6] = 1
@@ -90,15 +101,6 @@ class Bot:
                 self.list_input[7] = 1
             else :
                 self.list_input[7] = -1
-
-    def detect_gem(self, i, j):
-        k = 0
-        while k < len(list_gem):
-            gem = list_gem[k]
-            if gem.i == i and gem.j == j:
-                return gem
-            k += 1
-        return None
 
     def detect_foe(self, i, j):
         k = 0
@@ -135,7 +137,7 @@ class Bot:
             self.i += 1
 
     def eat(self):
-        gem = self.detect_gem(self.i, self.j)
+        gem = Gem.detect_gem(self.i, self.j)
         if gem is not None:
             if self.strength < max_strength:
                 self.strength += 1
@@ -160,6 +162,16 @@ class Gem:
 
     def erase(self):
         canvas.delete(self.sprite)
+
+    @staticmethod
+    def detect_gem(i, j):
+        k = 0
+        while k < len(list_gem):
+            gem = list_gem[k]
+            if gem.i == i and gem.j == j:
+                return gem
+            k += 1
+        return None
 
 
 # Genetic Algorithm
@@ -190,13 +202,14 @@ def crossover(bot1, bot2):
             tau = (len(bot1.list_neuron[i_layer])/2 - nbr_bot1) / (len(bot1.list_neuron[i_layer]) - (nbr_bot1 + nbr_bot2))
             p = random()
             if p > tau:
-                list_neuron[i_layer].append(bot2.list_neuron[i_layer][i_neuron])
+                list_neuron[i_layer] += [bot2.list_neuron[i_layer][i_neuron]]
                 nbr_bot2 += 1
             else:
-                list_neuron[i_layer].append(bot1.list_neuron[i_layer][i_neuron])
+                list_neuron[i_layer] += [bot1.list_neuron[i_layer][i_neuron]]
                 nbr_bot1 += 1
             if random() < 1/9:
-                list_neuron[i_layer][i_neuron].mutation()     # Attention mutation
+                neuron = list_neuron[i_layer][i_neuron]
+                neuron.mutation()     # Attention mutation
     bot3 = Bot(list_neuron, randrange(width), randrange(height))
     return bot3
 
@@ -210,6 +223,7 @@ def bot_sort():
             while temp > 0 and list_bot[temp].strength > list_bot[temp-1].strength:
                 list_bot[temp], list_bot[temp - 1] = list_bot[temp - 1], list_bot[temp]
                 temp -= 1
+
 
 # Useful stuff
 def max_index(list_int):
@@ -234,16 +248,9 @@ def int_to_color(strength):
 def list_neuron_random(nbr_inputs, nbr_neurones_cache, nbr_neurones_cache_2):
     res = [[], []]
     for j in range(nbr_neurones_cache):
-        res[0].append(Neuron(list_weight_random(nbr_inputs)))
+        res[0] += [Neuron(nbr_inputs)]
     for j in range(nbr_neurones_cache_2):
-        res[1].append(Neuron(list_weight_random(nbr_neurones_cache)))
-    return res
-
-
-def list_weight_random(nbr_input):
-    res = []
-    for i in range(nbr_input):
-        res.append(random()*2-1)
+        res[1] += [Neuron(nbr_neurones_cache)]
     return res
 
 
@@ -291,7 +298,7 @@ canvas = tk.Canvas(root, width=width*square_size, height=height*square_size, bac
 canvas.pack(side="top")
 quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
 quit_button.pack()
-generation_button = tk.Button(root, text="Nouvelle Generation", command=new_generation)
+generation_button = tk.Button(root, text="New Generation", command=new_generation)
 generation_button.pack()
 
 
@@ -306,6 +313,7 @@ def main():
 restart_button = tk.Button(root, text="Restart", command=start)
 restart_button.pack()
 
-start()
-main()
-root.mainloop()
+if __name__ == '__main__':
+    start()
+    main()
+    root.mainloop()
