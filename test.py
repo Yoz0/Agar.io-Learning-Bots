@@ -16,5 +16,16 @@ class MyTestCase(unittest.TestCase):
         # Test the case when list_input.len() != list_weight.len()
         self.assertEqual(ner.output([1, 1]), None)
 
+    def test_Bot(self):
+        global list_bot
+        b1 = Bot([[Neuron(1)], [Neuron(1)]], 1, 1)
+        b2 = Bot([[Neuron(1)], [Neuron(1)]], 1, 2)
+        list_bot = [b1, b2]
+        self.assertEqual(b1.detect_foe(1, 2), b2)
+        self.assertEqual(b1.detect_foe(1, 1), None)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
