@@ -103,57 +103,57 @@ class Bot:
         """
         canvas.delete(self.sprite)
 
-    def update(self):
+    def update(self, list_bot, list_gem):
         """
         Compute the input
         Calculate the output
         Move according to the output
         and update the display
         """
-        self.update_input()
+        self.update_input(list_bot, list_gem)
         self.update_output()
         self.move()
         self.display()
 
-    def update_input(self):
+    def update_input(self, list_bot, list_gem):
         """
         Check up, down, left and right to see if there is any foe or gem and update self.list_input accordingly
         """
         self.list_input = [0 for k in range(8)]
-        if Gem.detect_gem(self.i, self.j - 1) is not None:
+        if Gem.detect_gem(self.i, self.j - 1, list_gem) is not None:
             self.list_input[0] = 1
-        if Gem.detect_gem(self.i, self.j + 1) is not None:
+        if Gem.detect_gem(self.i, self.j + 1, list_gem) is not None:
             self.list_input[1] = 1
-        if Gem.detect_gem(self.i - 1, self.j) is not None:
+        if Gem.detect_gem(self.i - 1, self.j, list_gem) is not None:
             self.list_input[2] = 1
-        if Gem.detect_gem(self.i + 1, self.j) is not None:
+        if Gem.detect_gem(self.i + 1, self.j, list_gem) is not None:
             self.list_input[3] = 1
-        foe = self.detect_foe(self.i, self.j - 1)
+        foe = self.detect_foe(self.i, self.j - 1, list_bot)
         if foe is not None:
             if foe.strength < self.strength:
                 self.list_input[4] = 1
             else:
                 self.list_input[4] = -1
-        foe = self.detect_foe(self.i, self.j + 1)
+        foe = self.detect_foe(self.i, self.j + 1, list_bot)
         if foe is not None:
             if foe.strength < self.strength:
                 self.list_input[5] = 1
             else:
                 self.list_input[5] = -1
-        foe = self.detect_foe(self.i - 1, self.j)
+        foe = self.detect_foe(self.i - 1, self.j, list_bot)
         if foe is not None:
             if foe.strength < self.strength:
                 self.list_input[6] = 1
             else:
                 self.list_input[6] = -1
-        foe = self.detect_foe(self.i + 1, self.j)
+        foe = self.detect_foe(self.i + 1, self.j, list_bot)
         if foe is not None:
             if foe.strength < self.strength:
                 self.list_input[7] = 1
             else:
                 self.list_input[7] = -1
 
-    def detect_foe(self, i, j):
+    def detect_foe(self, i, j, list_bot):
         """
         Detect if there is a foe (a bot different than me) at the location i, j
         :param i: the line
@@ -201,17 +201,17 @@ class Bot:
         elif i_max == 3 and self.i < width-1:
             self.i += 1
 
-    def eat(self):
+    def eat(self, list_bot, list_gem, list_dead_bot):
         """
         Check if there is a weaker foe or a Gem at my location, if so, eat it!
         """
-        gem = Gem.detect_gem(self.i, self.j)
+        gem = Gem.detect_gem(self.i, self.j, list_gem)
         if gem is not None:
             if self.strength < max_strength:
                 self.strength += 1
             gem.erase()
             list_gem.remove(gem)
-        foe = self.detect_foe(self.i, self.j)
+        foe = self.detect_foe(self.i, self.j, list_bot)
         if foe is not None:
             if self.strength+5 <= max_strength:
                 self.strength += 5
@@ -238,7 +238,7 @@ class Gem:
         canvas.delete(self.sprite)
 
     @staticmethod
-    def detect_gem(i, j):
+    def detect_gem(i, j, list_gem):
         """
         Detect if there is a foe at the location i,j
         :param i: the line
@@ -356,55 +356,41 @@ def list_neuron_random(nbr_inputs, nbr_neurons_layer_1, nbr_neurons_layer_2):
     return res
 
 
-def generate_gem():
+def generate_gem(list_gem):
     """
     erase list_gem then generate nbr_gems Gems and puts them in list_gems
     """
-    global list_gem
     for gem in list_gem:
         gem.erase()
-    list_gem = []
+    list_gem.clear()
     for i in range(nbr_gems):
         list_gem.append(Gem(randrange(width), randrange(height)))
 
+def trigger_new_generation():
+    global list_bot, list_gem, list_dead_bot
+    new_generation(list_bot, list_gem, list_dead_bot);
 
-def new_generation():
+def new_generation(list_bot, list_gem, list_dead_bot):
     """
     Select the best from this generation
     Erase the old bots
     create the new bots
     and generate the gems
     """
-    global list_bot,list_dead_bot
     best = selection(7)
     for bot in list_bot:
         bot.erase()
-    list_bot = mate(best)
-    list_dead_bot = []
-    generate_gem()
+    list_bot.clear()
+    for bot in mate(best):
+        list_bot.append(bot)
+    list_dead_bot.clear()
+    generate_gem(list_gem)
 
-
-def start():
-    """
-    generate random bots
-    generate random gems
-    """
-    global list_bot, list_dead_bot
-    for bot in list_bot:
-            bot.erase()
-    list_bot = []
-    list_dead_bot = []
-    generate_gem()
-    for i in range(28):
-        list_bot.append(Bot(list_neuron_random(8, 8, 4), randrange(width), randrange(height)))
 
 # Global Variables
 width = 60      # in square
 height = 60     # in square
 square_size = 10
-list_bot = []
-list_dead_bot = []
-list_gem = []
 nbr_gems = 100
 fps = 30
 max_strength = 30
@@ -415,28 +401,35 @@ canvas = tk.Canvas(root, width=width*square_size, height=height*square_size, bac
 canvas.pack(side="top")
 quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
 quit_button.pack()
-generation_button = tk.Button(root, text="New Generation", command=new_generation)
+generation_button = tk.Button(root, text="New Generation", command=trigger_new_generation)
 generation_button.pack()
 
 
 # Main
-def main():
+def trigger_main():
+    global trigger_new_generation
+    main(list_bot, list_gem, list_dead_bot)
+
+
+def main(list_bot, list_gem, list_dead_bot):
     """
     update the bots in list_bot
     make them eat
     and relaunch the function main after a little time
-    :return:
     """
     for bot in list_bot:
-        bot.update()
+        bot.update(list_bot, list_gem)
     for bot in list_bot:
-        bot.eat()
-    root.after(1000 // fps, main)
+        bot.eat(list_bot, list_gem, list_dead_bot)
+    root.after(1000 // fps, trigger_main)
 
-restart_button = tk.Button(root, text="Restart", command=start)
-restart_button.pack()
 
 if __name__ == '__main__':
-    start()
-    main()
+    list_bot = []
+    list_dead_bot = []
+    list_gem = []
+    generate_gem(list_gem)
+    for i in range(28):
+        list_bot.append(Bot(list_neuron_random(8, 8, 4), randrange(width), randrange(height)))
+    main(list_bot, list_gem, list_dead_bot)
     root.mainloop()

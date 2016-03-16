@@ -17,12 +17,15 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(ner.output([1, 1]), None)
 
     def test_Bot(self):
-        global list_bot
-        b1 = Bot([[Neuron(1)], [Neuron(1)]], 1, 1)
-        b2 = Bot([[Neuron(1)], [Neuron(1)]], 1, 2)
+        b1 = Bot([[Neuron(1)], [Neuron(1)]], 0, 0)
+        b2 = Bot([[Neuron(1)], [Neuron(1)]], 0, 1)
         list_bot = [b1, b2]
-        self.assertEqual(b1.detect_foe(1, 2), b2)
-        self.assertEqual(b1.detect_foe(1, 1), None)
+        self.assertEqual(b1.detect_foe(0, 1, list_bot), b2)
+        self.assertEqual(b1.detect_foe(0, 0, list_bot), None)
+        self.assertEqual(b1.detect_foe(0, 2, list_bot), None)
+
+
+
 
 
 
