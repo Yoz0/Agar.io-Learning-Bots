@@ -185,7 +185,6 @@ class Bot:
             temp_inputs = temp_outputs[:]
             temp_outputs = []
         self.list_output = temp_inputs[:]
-        print(self.list_output)
 
     def move(self):
         """
@@ -228,15 +227,29 @@ class Gem:
     def __init__(self, i, j):
         self.i = i
         self.j = j
-        self.rayon = 3
-        self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
-                                         (self.i + 1) * square_size, (self.j+1) * square_size, fill='green')
+        self.marge = 2
+        self.sprite = canvas.create_rectangle(self.i * square_size + self.marge, self.j * square_size + self.marge,
+                                         (self.i + 1) * square_size - self.marge, (self.j+1) * square_size - self.marge,
+                                         fill=Gem.random_color())
 
     def erase(self):
         """
         Erase the sprite from the canvas
         """
         canvas.delete(self.sprite)
+
+    @staticmethod
+    def random_color():
+        red = randrange(255)
+        blue = randrange(255)
+        green = randrange(255)
+        res = "#"
+        for i in [red, green, blue]:
+            if i < 16:
+                res += "0"+hex(i)[-1:].upper()
+            else:
+                res += hex(i)[-2:].upper()
+        return res
 
     @staticmethod
     def detect_gem(i, j, list_gem):
