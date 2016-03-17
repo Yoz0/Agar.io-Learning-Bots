@@ -23,8 +23,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(g1.detect_gem(0, 1, list_gem), None)
 
     def test_Bot(self):
-        b1 = Bot(list_neuron_random(8, 8, 4), 0, 0)
-        b2 = Bot(list_neuron_random(8, 8, 4), 0, 1)  # b2 is just below b1
+        b1 = Bot(list_neuron_random(8, [4]), 0, 0)
+        b2 = Bot(list_neuron_random(8, [4]), 0, 1)  # b2 is just below b1
         list_bot = [b1, b2]
         list_dead_bot = []
         g1 = Gem(0, 0)

@@ -7,8 +7,8 @@ but I changed some rules to facilitate the neural network approach. The bots mov
 
 Neural Network
 --------------
-Each bots has a two layer [neural network](https://en.wikipedia.org/wiki/Artificial_neural_network).
-Fist layer has 8 neurons, second layer has 4.
+Each bots has a one layer [neural network](https://en.wikipedia.org/wiki/Artificial_neural_network).
+The layer has 4 Neurons.
 ###Inputs
 * Gem up (1 if there is, 0  if there isn't )
 * Gem down

@@ -185,6 +185,7 @@ class Bot:
             temp_inputs = temp_outputs[:]
             temp_outputs = []
         self.list_output = temp_inputs[:]
+        print(self.list_output)
 
     def move(self):
         """
@@ -340,19 +341,18 @@ def max_index(list_int):
 
 
 # Generate a new level
-def list_neuron_random(nbr_inputs, nbr_neurons_layer_1, nbr_neurons_layer_2):
+def list_neuron_random(nbr_input, list_nbr_neurons):
     """
     Create a list of two list of neurons
-    :param nbr_inputs: the number of inputs for the neuron on the first layer
-    :param nbr_neurons_layer_1: the number of the neuron in the first layer
-    :param nbr_neurons_layer_2: the number of the neuron in the second layer
-    :return: the list of two list of neurons
+    :param nbr_input: the number of inputs for the neuron on the first layer
+    :param list_nbr_neurons: the list of with the number of neuron we want in the layer i in list_nbr_neurons[i]
+    :return: the list of list of neurons
     """
-    res = [[], []]
-    for j in range(nbr_neurons_layer_1):
-        res[0] += [Neuron(nbr_inputs)]
-    for j in range(nbr_neurons_layer_2):
-        res[1] += [Neuron(nbr_neurons_layer_1)]
+    res = [[] for i in range(len(list_nbr_neurons))]
+    for i_layer in range(len(res)):
+        for i_neuron in range(list_nbr_neurons[i_layer]):
+            res[i_layer].append(Neuron(nbr_input))
+        nbr_input = len(res[i_layer])   # Now the nbr_input is the number of neurons in the previous layer
     return res
 
 
@@ -428,6 +428,6 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(28):
-        list_bot.append(Bot(list_neuron_random(8, 8, 4), randrange(width), randrange(height)))
+        list_bot.append(Bot(list_neuron_random(8,[4]), randrange(width), randrange(height)))
     main(list_bot, list_gem, list_dead_bot)
     root.mainloop()
