@@ -367,7 +367,6 @@ def generate_gem(list_gem):
         list_gem.append(Gem(randrange(width), randrange(height)))
 
 def trigger_new_generation():
-    global list_bot, list_gem, list_dead_bot
     new_generation(list_bot, list_gem, list_dead_bot);
 
 def new_generation(list_bot, list_gem, list_dead_bot):
@@ -407,7 +406,6 @@ generation_button.pack()
 
 # Main
 def trigger_main():
-    global trigger_new_generation
     main(list_bot, list_gem, list_dead_bot)
 
 
