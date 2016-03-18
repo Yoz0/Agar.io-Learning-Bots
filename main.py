@@ -175,11 +175,11 @@ class Bot:
         """
         temp_inputs = self.list_input[:]  # Copy the list
         temp_outputs = []
-        for i_layer in range(len(self.list_neuron)):
+        for layer in self.list_neuron:
             # for each layer of neurons
-            for i_neuron in range(len(self.list_neuron[i_layer])):
+            for neuron in layer:
                 # for each neuron in this layer
-                temp_outputs.append(self.list_neuron[i_layer][i_neuron].output(temp_inputs))
+                temp_outputs.append(neuron.output(temp_inputs))
                 # we add to temp_outputs the output of the neuron self.list_neuron[i_layer][i_neuron]
                 # with temp_inputs as inputs
             temp_inputs = temp_outputs[:]
