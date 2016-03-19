@@ -75,10 +75,6 @@ def bot_sort():
                 list_bot[temp], list_bot[temp - 1] = list_bot[temp - 1], list_bot[temp]
                 temp -= 1
 
-
-
-
-
 # Generate a new level
 def list_neuron_random(nbr_input, list_nbr_neurons):
     """

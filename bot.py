@@ -21,32 +21,13 @@ class Bot:
 
     def display(self):
         """
-        Display the bot at the position i;j on the canvas (canvas should be a global variable
-        :return:
+        Display the bot at the position i;j on the canvas.
+        Canvas should be a global ariable.
         """
         canvas.delete(self.sprite)
         self.sprite = canvas.create_oval(self.i * SQUARE_SIZE, self.j * SQUARE_SIZE,
                                          (self.i + 1) * SQUARE_SIZE, (self.j+1) * SQUARE_SIZE,
-                                         fill=self.int_to_color(self.strength))
-
-    @staticmethod
-    def int_to_color(strength):
-        """
-        :param strength: a number between 0 and 'MAX_STRENGTH'
-        :return: a string like "#RRGGBB" which can be interpreted as a color
-        (the higher the strength is, the reder the color is)
-        """
-
-        red = strength * 255 // MAX_STRENGTH
-        blue = 255 - red
-        green = 0
-        res = "#"
-        for i in [red, green, blue]:
-            if i < 16:
-                res += "0"+hex(i)[-1:].upper()
-            else:
-                res += hex(i)[-2:].upper()
-        return res
+                                         fill=int_to_color(self.strength))
 
     def erase(self):
         """
