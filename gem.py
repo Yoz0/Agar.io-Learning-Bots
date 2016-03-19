@@ -1,5 +1,6 @@
 from random import random, randrange
 
+from useful import *
 from config import *
 
 class Gem:

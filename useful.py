@@ -3,6 +3,9 @@ file: utility.py
 This file holds usefull functions that can be reused in other programms
 """
 
+from random import randrange
+from config import *
+
 def max_index(list_int):
     """
     :param list_int: a list of numbers
