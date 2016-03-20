@@ -42,9 +42,9 @@ class Layer:
 			#check if every neuron has the same number of input
 			for neuron in self.neurons:
 				if neuron.nbr_input != self.nbr_input:
-					raise ValueError("In 'Layer.__init__()' : the neurons you provided do not all take the same number of input")
+					raise ValueError("In 'Layer.__init__()' : the neurons you provided do not all take the same number of input.\n")
 		else:
-			raise TypeError("In 'Layer.__init__()' : wrong arguments passed.")
+			raise TypeError("In 'Layer.__init__()' : wrong arguments passed.\n")
 
 	def get_output(self, list_input):
 		"""
@@ -53,12 +53,12 @@ class Layer:
 		"""
 
 		#protection
-		if(len(list_input) != nbr_input):
-			raise ValueError("In Layer.output() (id : " + str(id(self)) + " : list_input has wrong size")
+		if(len(list_input) != self.nbr_input):
+			raise ValueError("In Layer.output() (id : " + str(id(self)) + " : list_input has wrong size.\n")
 
 		#calculation
 		output = []
-		for neuron in neurons:
+		for neuron in self.neurons:
 			output.append(neuron.output(list_input))
 
 		return output
@@ -81,7 +81,7 @@ class Layer:
 			for neuron in self.neurons:
 				neuron.mutation()
 		else:
-			raise ValueError("In Layer.mutate() (id : " + str(id(self)) + " : given level unknown")
+			raise ValueError("In Layer.mutate() (id : " + str(id(self)) + " : given level unknown.\n")
 
 	def __repr__(self):
 		res = ""
@@ -103,24 +103,24 @@ class Layer:
 	def __getitem__(self, key):
 		"""called when you use the 'object[key]' notation"""
 		if(key > self.nbr_neuron):
-			raise ValueError("in 'Layer.__getitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.")
+			raise ValueError("in 'Layer.__getitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.\n")
 		return self.neurons[key]
 
 	def __setitem__(self, key, value):
 		"""called when you use the 'object[key] = value' notation"""
 		if(key > self.nbr_neuron):
-			raise ValueError("in 'Layer.__setitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.")
+			raise ValueError("in 'Layer.__setitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.\n")
 		if isinstance(value, Neuron):
-			raise TypeError("in 'Layer.__setitem__()' : layer only contains Neurons, not " + str(type(value)) + "s.")
+			raise TypeError("in 'Layer.__setitem__()' : layer only contains Neurons, not " + str(type(value)) + "s.\n")
 
 		self.neurons[key] = value
 
 	def __delitem__(self, key):
 		"""called when you 'del' an object"""
-		return self.neurons.__delitem__(key)
+		return self.neurons.__delitem__()
 
 	def __iter__(self):
-		return self.neurons.__iter__(self)
+		return self.neurons.__iter__()
 
 	def __reversed__(self):
-		return self.neurons.__reversed__(self)
+		return self.neurons.__reversed__()
