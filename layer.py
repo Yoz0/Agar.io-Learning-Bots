@@ -34,6 +34,10 @@ class Layer:
 			for i in range(self.nbr_neuron):
 				self.neurons.append(Neuron(self.nbr_input))
 		elif arg2 == None and isinstance(arg1, list):
+			#check if arg1 is a list of neurons
+			for a in arg1:
+				if not isinstance(a, Neuron):
+					raise TypeError("In 'Layer.__init__()' : The list you provided does not only contain neurons. It should.")
 			#method 2
 			self.neurons = deepcopy(arg1)
 			self.nbr_neuron = len(self.neurons)
@@ -102,13 +106,13 @@ class Layer:
 
 	def __getitem__(self, key):
 		"""called when you use the 'object[key]' notation"""
-		if(key > self.nbr_neuron):
+		if(key >= self.nbr_neuron):
 			raise ValueError("in 'Layer.__getitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.\n")
 		return self.neurons[key]
 
 	def __setitem__(self, key, value):
 		"""called when you use the 'object[key] = value' notation"""
-		if(key > self.nbr_neuron):
+		if(key >= self.nbr_neuron):
 			raise ValueError("in 'Layer.__setitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.\n")
 		if isinstance(value, Neuron):
 			raise TypeError("in 'Layer.__setitem__()' : layer only contains Neurons, not " + str(type(value)) + "s.\n")

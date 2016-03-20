@@ -1,13 +1,26 @@
 from gem import *
+from neuron import *
+from layer import *
+from neural_network import *
 from useful import *
 from config import *
+
 
 class Bot:
     """
     This is a bot.
     """
-    def __init__(self, list_neuron, i, j):
-        self.list_neuron = list_neuron
+
+    def __init__(self, nbr_input, list_sizes, i, j, name = "unnamed"):
+        """
+        inits a bot whose brain is made of a neural network. The neural network
+        structure is given by 'list_sizes' where 'list_sizes[n]' is the size of the
+        nth layer of the network, and 'nbr_input' is the number of input that each
+        neuron of the first layer take.
+        """
+
+        self.name = name
+        self.brain = Neural_network(list_sizes, nbr_input)
         self.i = i
         self.j = j
         self.strength = 0
@@ -15,9 +28,30 @@ class Bot:
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
         self.sprite = None
 
+    def get_name(self):
+        return self.name
+
+    def get_full_id(self):
+        res = "id: " + str(id(self))
+        res += " position: i = " + str(self.i) + " ; j = " + str(self.j)
+        res += "Strength: " + str(self.strength)
+        res += "\n Neurons:\n"
+        for i, layer in ennumerate(brain):
+            for neuron in layer:
+                res += "Layer " + i + " - "
+                res += str(neuron)
+            res += "\n"
+
+        return res
+
     def __str__(self):
-        return "id : " + str(id(self)) + " position : i = " + str(self.i) + " ; j = " + str(
-            self.j) + "Strength : " + str(self.strength) + "\n Neurons : " + str(self.list_neuron)
+        return self.get_name() + " Strength: " + str(self.strength)
+
+    def reset(self):
+        """keeps the brain as it is, but resets the strengh and the position"""
+        self.i = randrange(WIDTH)
+        self.j = randrange(HEIGHT)
+        self.strength = 0
 
     def display(self):
         """
@@ -102,28 +136,30 @@ class Bot:
 
     def update_output(self):
         """
-        Calculate each output of the neurons and
-        set list_output as the proper value.
+        Feeds the brain (neural_network) with 'list_input', and updates 'list_output'
+        accordingly.
         """
-        temp_inputs = self.list_input[:]  # Copy the list
-        temp_outputs = []
-        for layer in self.list_neuron:
-            # for each layer of neurons
-            for neuron in layer:
-                # for each neuron in this layer
-                temp_outputs.append(neuron.output(temp_inputs))
-                # we add to temp_outputs the output of the neuron self.list_neuron[i_layer][i_neuron]
-                # with temp_inputs as inputs
-            temp_inputs = temp_outputs[:]
-            temp_outputs = []
-        self.list_output = temp_inputs[:]
+        self.list_output = self.brain.get_output(self.list_input)
 
     def move(self):
         """
         Check which out put is the "most activated" (which is higher) and move in that direction
         :return:
         """
+
+        # #check if every output is the same
+        # all_same = 1        #let's assert all output is the same
+        # first_value = self.list_output[0]
+        # for value in self.list_output:
+        #     if value != first_value:
+        #         all_same = 0
+        #         break
+
+        # if all_same:
+        #     i_max = randrange(4)
+        # else:
         i_max = max_index(self.list_output)
+
         if i_max == 0 and self.j > 0:
             self.j -= 1
         elif i_max == 1 and self.j < HEIGHT-1:
@@ -143,10 +179,13 @@ class Bot:
                 self.strength += 1
             gem.erase()
             list_gem.remove(gem)
+
         foe = self.detect_foe(self.i, self.j, list_bot)
         if foe is not None:
-            if self.strength+5 <= MAX_STRENGTH:
-                self.strength += 5
-            foe.erase()
-            list_dead_bot.append(foe)
-            list_bot.remove(foe)
+            if(foe.strength <= self.strength):
+                for i in range(5):
+                    if self.strength+1 <= MAX_STRENGTH:
+                        self.strength += 1
+                foe.erase()
+                list_dead_bot.append(foe)
+                list_bot.remove(foe)

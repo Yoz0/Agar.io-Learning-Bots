@@ -1,5 +1,5 @@
 from random import random, randrange
-
+from copy import *
 
 from config import *
 from neuron import *
@@ -7,16 +7,21 @@ from bot import *
 from gem import *
 
 # Genetic Algorithm
-def selection(nbr_to_choose):
+def selection(list_of_bots, nbr_to_choose):
     """
-    Add list_dead bot to list_bot, then select the nbr_to_choose best
+    Sorts 'list_of_bots' and return a list with the 'nbr_to_choose' best bots
+    :param list_of_bots: list of bots from which to select
     :param nbr_to_choose: the number of bot to choose
-    :return: the list of the nbr_to_choose best bot
+    :return: the list of the 'nbr_to_choose' best bot
+
+    warning : this function will have for side effect to sort the list actual list
+              given in argument !!
+              The returned list, however, is completly independent from the one given
+              in argument !
     """
-    global list_bot
-    list_bot += list_dead_bot
-    bot_sort()
-    return list_bot[:nbr_to_choose]
+
+    bot_sort(list_of_bots)
+    return deepcopy(list_of_bots[:nbr_to_choose])
 
 
 def mate(best):
@@ -62,17 +67,17 @@ def crossover(bot1, bot2):
     return bot3
 
 
-def bot_sort():
+def bot_sort(list_of_bots):
     """
-    sort the global list list_bot with strength increasing
+    Sort the list 'list_of_bots' given in argument, with strength increasing
     """
-    global list_bot
-    for i in range(len(list_bot)-1):
-        if list_bot[i].strength < list_bot[i+1].strength:
-            list_bot[i], list_bot[i + 1] = list_bot[i + 1], list_bot[i]
+
+    for i in range(len(list_of_bots)-1):
+        if list_of_bots[i].strength < list_of_bots[i+1].strength:
+            list_of_bots[i], list_of_bots[i + 1] = list_of_bots[i + 1], list_of_bots[i]
             temp = i
-            while temp > 0 and list_bot[temp].strength > list_bot[temp-1].strength:
-                list_bot[temp], list_bot[temp - 1] = list_bot[temp - 1], list_bot[temp]
+            while temp > 0 and list_of_bots[temp].strength > list_of_bots[temp-1].strength:
+                list_of_bots[temp], list_of_bots[temp - 1] = list_of_bots[temp - 1], list_of_bots[temp]
                 temp -= 1
 
 # Generate a new level
@@ -101,27 +106,88 @@ def generate_gem(list_gem):
     for i in range(NBR_GEMS):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
-def trigger_new_generation():
-    new_generation(list_bot, list_gem, list_dead_bot);
+def place_bots_in_line():
+    global list_bot
 
-def new_generation(list_bot, list_gem, list_dead_bot):
+    if len(list_bot) > WIDTH/2:
+        raise ValueError("too many bots to do that\n")
+
+    for i, bot in enumerate(list_bot):
+        bot.i = 2*i
+        bot.j = WIDTH-1
+
+def trigger_new_generation():
+    new_generation();
+
+def new_generation():
     """
     Select the best from this generation
     Erase the old bots
     create the new bots
     and generate the gems
     """
-    best = selection(7)
+
+    global list_bot
+    global list_gem
+    global list_dead_bot
+    global generation
+
+    # best = selection(7)
+
+    # for bot in list_bot:
+    #     bot.erase()
+    # list_bot.clear()
+
+    # for bot in mate(best):
+    #     list_bot.append(bot)
+    # list_dead_bot.clear()
+    # generate_gem(list_gem)
+
+    #gather every bot
+    list_bot += list_dead_bot
+
+    #empty list of dead bots
+    list_dead_bot.clear()
+
+    #remove everyone from display
     for bot in list_bot:
         bot.erase()
-    list_bot.clear()
-    for bot in mate(best):
-        list_bot.append(bot)
-    list_dead_bot.clear()
+
+    #select the best NB_SELECT_BOT
+    best = selection(list_bot, NB_SELECT_BOT)
+
+    #re-set the list of bots
+    list_bot = best
+
+    print("\nchoosen bots :")
+    for bot in list_bot:
+        print(str(bot))
+
+    #calculate and print mean
+    sum = 0
+    for bot in list_bot:
+        sum += bot.strength
+    print("mean: " + str(sum/NB_SELECT_BOT))
+
+    #reset every bot that we have kept from the previous generation
+    for bot in list_bot:
+        bot.reset()
+
+    #complete the new generation with fresh random bots
+    generation += 1
+    for i in range(NBR_BOT - NB_SELECT_BOT):
+        list_bot.append(Bot(8, [4], randrange(WIDTH), randrange(HEIGHT), str(generation) + "th_gen_" + str(i)))
+
+    #generate a new set of gems
     generate_gem(list_gem)
+
+    place_bots_in_line()
 
 # Main
 def trigger_main():
+    global list_bot
+    global list_gem
+    global list_dead_bot
     main(list_bot, list_gem, list_dead_bot)
 
 
@@ -144,11 +210,13 @@ generation_button = tk.Button(root, text="New Generation", command=trigger_new_g
 generation_button.pack()
 
 if __name__ == '__main__':
+    generation = 1
     list_bot = []
     list_dead_bot = []
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot(list_neuron_random(8,[4]), randrange(WIDTH), randrange(HEIGHT)))
+        list_bot.append(Bot(8, [4], randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+    place_bots_in_line()
     main(list_bot, list_gem, list_dead_bot)
     root.mainloop()

@@ -15,6 +15,7 @@ NBR_GEMS = 100
 NBR_BOT = 30
 FPS = 20
 MAX_STRENGTH = 30
+NB_SELECT_BOT = 5
 
 # GLOBAL VARIABLES #################################################################
 root = tk.Tk()
