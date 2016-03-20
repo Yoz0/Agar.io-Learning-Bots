@@ -11,7 +11,7 @@ class Bot:
     This is a bot.
     """
 
-    def __init__(self, nbr_input, list_sizes, i, j, name = "unnamed"):
+    def __init__(self, nbr_input, brain, i, j, name = "unnamed"):
         """
         inits a bot whose brain is made of a neural network. The neural network
         structure is given by 'list_sizes' where 'list_sizes[n]' is the size of the
@@ -20,11 +20,11 @@ class Bot:
         """
 
         self.name = name
-        self.brain = Neural_network(list_sizes, nbr_input)
+        self.brain = brain
         self.i = i
         self.j = j
         self.strength = 0
-        self.list_input = [0 for i in range(8)]
+        self.list_input = [0 for i in range(nbr_input)]
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
         self.sprite = None
 

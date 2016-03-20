@@ -32,5 +32,5 @@ When the user hit the "New Generation" button, the program search for the 7 stro
 and [mutation](https://en.wikipedia.org/wiki/Mutation_%28genetic_algorithm%29).
 
 Technical stuff
-_______________
+---------------
 I use python 3.5 and Tkinter

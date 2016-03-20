@@ -42,28 +42,31 @@ def mate(best):
 
 def crossover(bot1, bot2):
     """
-    Create a new bot with the crossover and the mutation method
+    Create a new bot with the crossover
     :param bot1:
     :param bot2:
     :return: a new bot
     """
-    list_neuron = [[], []]
-    for i_layer in range(len(bot1.list_neuron)):
-        nbr_bot1 = 0
-        nbr_bot2 = 0
-        for i_neuron in range(len(bot1.list_neuron[i_layer])):
-            tau = (len(bot1.list_neuron[i_layer])/2 - nbr_bot1) / (len(bot1.list_neuron[i_layer]) - (nbr_bot1 + nbr_bot2))
-            p = random()
-            if p > tau:
-                list_neuron[i_layer] += [bot2.list_neuron[i_layer][i_neuron]]
-                nbr_bot2 += 1
+    list_layer = []
+    for i_layer in range(len(bot1.brain)):
+        list_neurons =[]
+        nbr_neuron_from_bot1 = len(bot1.brain[i_layer])//2
+        # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
+        index_of_neurons_from_bot_1 = []
+        for i in range(nbr_neuron_from_bot1):
+            index = randrange(len(bot1.brain[i_layer]))
+            while index in index_of_neurons_from_bot_1:    # We don't want the same index twice
+                index = randrange(len(bot1.brain[i_layer]))
+            index_of_neurons_from_bot_1.append(index)
+        for i in range(len(bot1.brain[i_layer])):
+            if i in index_of_neurons_from_bot_1:
+                list_neurons.append(deepcopy(bot1.brain[i_layer][i]))
             else:
-                list_neuron[i_layer] += [bot1.list_neuron[i_layer][i_neuron]]
-                nbr_bot1 += 1
-            if random() < 1/9:
-                neuron = list_neuron[i_layer][i_neuron]
-                neuron.mutation()     # Attention mutation
-    bot3 = Bot(list_neuron, randrange(WIDTH), randrange(HEIGHT))
+                list_neurons.append(deepcopy(bot2.brain[i_layer][i]))
+        layer = Layer(list_neurons)
+        list_layer.append(layer)
+    brain = Neural_network(list_layer)
+    bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT))
     return bot3
 
 
@@ -117,20 +120,19 @@ def place_bots_in_line():
         bot.j = WIDTH-1
 
 def trigger_new_generation():
-    new_generation();
+    global list_bot
+    global list_gem
+    global list_dead_bot
+    global generation
+    new_generation(list_bot, list_gem, list_dead_bot, generation)
 
-def new_generation():
+def new_generation(list_bot, list_gem, list_dead_bot, generation):
     """
     Select the best from this generation
     Erase the old bots
     create the new bots
     and generate the gems
     """
-
-    global list_bot
-    global list_gem
-    global list_dead_bot
-    global generation
 
     # best = selection(7)
 
@@ -153,11 +155,11 @@ def new_generation():
     for bot in list_bot:
         bot.erase()
 
+    list_bot.clear()
     #select the best NB_SELECT_BOT
-    best = selection(list_bot, NB_SELECT_BOT)
-
-    #re-set the list of bots
-    list_bot = best
+    for b in selection(list_bot, NB_SELECT_BOT):
+        #re-set the list of bots
+        list_bot.append(b)
 
     print("\nchoosen bots :")
     for bot in list_bot:
@@ -176,7 +178,7 @@ def new_generation():
     #complete the new generation with fresh random bots
     generation += 1
     for i in range(NBR_BOT - NB_SELECT_BOT):
-        list_bot.append(Bot(8, [4], randrange(WIDTH), randrange(HEIGHT), str(generation) + "th_gen_" + str(i)))
+        list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), str(generation) + "th_gen_" + str(i)))
 
     #generate a new set of gems
     generate_gem(list_gem)
@@ -205,9 +207,9 @@ def main(list_bot, list_gem, list_dead_bot):
 
 # Creation of the graphic interface
 quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
-quit_button.pack()
+quit_button.pack(side="right")
 generation_button = tk.Button(root, text="New Generation", command=trigger_new_generation)
-generation_button.pack()
+generation_button.pack(side="right")
 
 if __name__ == '__main__':
     generation = 1
@@ -216,7 +218,7 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot(8, [4], randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+        list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
     place_bots_in_line()
     main(list_bot, list_gem, list_dead_bot)
     root.mainloop()
