@@ -1,4 +1,5 @@
 from copy import *
+from neuron import *
 
 class Layer:
 	"""
@@ -11,7 +12,7 @@ class Layer:
 	yield the result of every neuron of the layer, in the form of a list.
 	"""
 
-	def __init__(arg1, arg2 = None):
+	def __init__(self, arg1, arg2 = None):
 		"""
 		Method 1 : my_layer = Layer(nbr_neuron, nbr_input)
 			Inits a layer that has 'nbr_neuron' neurons that all take 'nbr_input' inputs
@@ -21,7 +22,6 @@ class Layer:
 			to the number of neurons in the previous layer, for each of these neurons
 			yieldsone output.
 		Method 2 : my_layer = Layer(list_neurons)
-			(Depreciated)
 			Inits a layer from a list of existing neuron.
 			All neurons have to take the same number of input.
 		"""
@@ -30,23 +30,23 @@ class Layer:
 			#method 1
 			self.nbr_neuron = arg1
 			self.nbr_input = arg2
-			self.neurons[]
+			self.neurons = []
 			for i in range(self.nbr_neuron):
-				neurons.append(Neuron(self.nbr_input))
-		else if arg2 == None and isinstance(arg1, list):
+				self.neurons.append(Neuron(self.nbr_input))
+		elif arg2 == None and isinstance(arg1, list):
 			#method 2
 			self.neurons = deepcopy(arg1)
 			self.nbr_neuron = len(self.neurons)
-			self.nbr_input = len(self.neurons.nbr_input)
+			self.nbr_input = self.neurons[0].nbr_input
 
 			#check if every neuron has the same number of input
 			for neuron in self.neurons:
 				if neuron.nbr_input != self.nbr_input:
 					raise ValueError("In 'Layer.__init__()' : the neurons you provided do not all take the same number of input")
-		else
-			raise TypeError("In 'Layer.__init__()' : wrong arguments passed."
+		else:
+			raise TypeError("In 'Layer.__init__()' : wrong arguments passed.")
 
-	def get_output(list_input):
+	def get_output(self, list_input):
 		"""
 		This function feeds every neuron of the layer with 'list_input', and returns
 		the result of each neuron in form of a list.
@@ -63,7 +63,7 @@ class Layer:
 
 		return output
 
-	def mutate(level):
+	def mutate(self, level):
 		"""
 		randomly changes weights of neurons.
 		level 1 : chooses one neuron randomly and changes one of its weight randomly
@@ -71,28 +71,26 @@ class Layer:
 		level 3 : for each neuron, changes one of its weight randomly
 		"""
 
-		if(level == 1){
-			i = randrange(self.nbr_input);
+		if(level == 1):
+			i = randrange(self.nbr_input)
 			self.neurons[i].mutation()
-		}
-		else if(level == 2){
-			i = randrange(self.nbr_input);
-			del neurons[i];
-			self.neurons[i] = Neuron(self.nbr_input);
-		}
-		else if(level == 3){
+		elif(level == 2):
+			i = randrange(self.nbr_input)
+			self.neurons[i] = Neuron(self.nbr_input)
+		elif(level == 3):
 			for neuron in self.neurons:
-				neuron.mutation();
-		}
-		else
-			raise ValueError("In Layer.mutate() (id : " + str(id(self)) + " : given level unknown");
+				neuron.mutation()
+		else:
+			raise ValueError("In Layer.mutate() (id : " + str(id(self)) + " : given level unknown")
 
 	def __repr__(self):
 		res = ""
-		for neuron in neurons:
-			for i in range(neuron.nbr_input):
-				res += neuron.list_weight[i] + "\n"
+		for neuron in self.neurons:
+			for i in range(self.nbr_input):
+				res += str(neuron.list_weight[i]) + "\n"
 			res += "\n"
+
+		return res
 
 	#The following functions were created in order to meet python's protocol for
 	#sequences. (protocol = interface in python)
@@ -105,15 +103,15 @@ class Layer:
 	def __getitem__(self, key):
 		"""called when you use the 'object[key]' notation"""
 		if(key > self.nbr_neuron):
-			raise ValueError("in 'Layer.__getitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'."
+			raise ValueError("in 'Layer.__getitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.")
 		return self.neurons[key]
 
 	def __setitem__(self, key, value):
 		"""called when you use the 'object[key] = value' notation"""
 		if(key > self.nbr_neuron):
-			raise ValueError("in 'Layer.__setitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'."
+			raise ValueError("in 'Layer.__setitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.")
 		if isinstance(value, Neuron):
-			raise TypeError("in 'Layer.__setitem__()' : layer only contains Neurons, not " + str(type(value)) + "s."
+			raise TypeError("in 'Layer.__setitem__()' : layer only contains Neurons, not " + str(type(value)) + "s.")
 
 		self.neurons[key] = value
 
