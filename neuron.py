@@ -5,9 +5,21 @@ from config import *
 class Neuron:
     """ This is a neuron
     """
-    def __init__(self, nbr_input):
-        self.list_weight = Neuron.list_weight_random(nbr_input)
-        self.nbr_input = nbr_input
+    def __init__(self, arg1):
+        """
+        method 1 : my_neuron = Neuron(nbr_input)
+            Inits a neuron that takes 'nbr_input' inputs, and has random weights.
+        method 2 : my_neuron = Neuron(list_weight)
+            Inits a neuron that has list_weight as weights, and as many inputs
+        """
+        if isinstance(arg1, int):
+            #method 1
+            self.nbr_input = arg1
+            self.list_weight = Neuron.list_weight_random(self.nbr_input)
+        elif isinstance(arg1, list):
+            #method 2
+            self.list_weight = arg1
+            self.nbr_input = len(self.list_weight)
 
     def __str__(self):
         return "id : " + str(id(self)) + " list of weight" + str(self.list_weight)
