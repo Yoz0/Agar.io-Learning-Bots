@@ -13,10 +13,11 @@ HEIGHT = 60     # in square
 SQUARE_SIZE = 10
 NBR_GEMS = 100
 NBR_BOT = 30
-FPS = 60
+FPS = 120
 MAX_STRENGTH = 30
-NB_SELECT_BOT = 10
+NB_SELECT_BOT = 5
 NB_TURN_GENERATION = 90
+FILE_RES = open("res.data",'w')
 
 # GLOBAL VARIABLES #################################################################
 root = tk.Tk()

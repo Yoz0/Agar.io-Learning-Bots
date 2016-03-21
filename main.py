@@ -27,11 +27,11 @@ def mate(best):
     """
     Mate the best bot with each other
     :param best: the bots to mate of len l
-    :return: the list of the bots to crossover of len l*3
+    :return: the list of the bots to crossover of len l*NBR_BOT//NB_SELECT_BOT
     """
     res = []
     for k in range(len(best)):
-        for i in range(3):
+        for i in range(NBR_BOT//NB_SELECT_BOT):
             temp = randrange(0, len(best))
             while temp == k:
                 temp = randrange(0, len(best))
@@ -114,7 +114,7 @@ def place_bots_in_line(list_bot):
 
     for i, bot in enumerate(list_bot):
         bot.i = 2*i
-        bot.j = WIDTH-1
+        bot.j = HEIGHT-1
 
 def trigger_new_generation():
     global list_bot
@@ -162,6 +162,7 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     for bot in best:
         sum += bot.strength
     print("mean: " + str(sum/NB_SELECT_BOT))
+    FILE_RES.write(str(sum/NB_SELECT_BOT)+"\n")
 
     #clear the list_bot
     list_bot.clear()
@@ -227,3 +228,4 @@ if __name__ == '__main__':
     place_bots_in_line(list_bot)
     main(list_bot, list_gem, list_dead_bot)
     root.mainloop()
+    FILE_RES.close()

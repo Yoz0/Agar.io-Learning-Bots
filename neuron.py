@@ -2,6 +2,7 @@ from random import random, randrange
 from math import exp
 from config import *
 
+
 class Neuron:
     """ This is a neuron
     """
