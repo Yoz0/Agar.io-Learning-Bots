@@ -1,292 +1,26 @@
-from math import exp
-from random import random, randrange, choice
-import tkinter as tk
-
-
-class Neuron:
-    """ This is a neuron
-    """
-    def __init__(self, nbr_input):
-        self.list_weight = Neuron.list_weight_random(nbr_input)
-
-    def __str__(self):
-        return "id : " + str(id(self)) + " list of weight" + str(self.list_weight)
-
-    def output(self, list_input):
-        """
-        :param list_input: a list of input (numbers). This list length should be the nbr_input entered at the creation
-        :return: a positive number calculated with the input
-        """
-        if len(list_input) != len(self.list_weight):
-            print("list_input and list_weight don't have the same length\n" +
-                  'The neuron : ' + str(self) + " ; The input : " + str(list_input))
-            return None
-        res = 0
-        for i in range(len(self.list_weight)):
-            res += self.list_weight[i] * list_input[i]
-        return 1 / (1 + exp(-res))
-
-    def mutation(self):
-        """
-        Change randomly one weight on the list_weight
-        """
-        i = randrange(len(self.list_weight))
-        self.list_weight[i] = Neuron.random_weight()
-
-    @staticmethod
-    def random_weight():
-        """
-        :return: a random weight
-        """
-        return random()*2-1
-
-    @staticmethod
-    def list_weight_random(nbr_input):
-        """
-        :param nbr_input: the size of the desired list
-        :return: a list of random weight.
-        """
-        res = []
-        for i in range(nbr_input):
-            res.append(Neuron.random_weight())
-        return res
-
-
-class Bot:
-    """
-    This is a bot.
-    """
-    def __init__(self, list_neuron, i, j):
-        self.list_neuron = list_neuron
-        self.i = i
-        self.j = j
-        self.strength = 0
-        self.list_input = [0 for i in range(8)]
-        self.list_output = [0, 0, 0, 0]  # up / down / left / right
-        self.sprite = None
-
-    def __str__(self):
-        return "id : " + str(id(self)) + " position : i = " + str(self.i) + " ; j = " + str(
-            self.j) + "Strength : " + str(self.strength) + "\n Neurons : " + str(self.list_neuron)
-
-    def display(self):
-        """
-        Display the bot at the position i;j on the canvas (canvas should be a global variable
-        :return:
-        """
-        canvas.delete(self.sprite)
-        self.sprite = canvas.create_oval(self.i * square_size, self.j * square_size,
-                                         (self.i + 1) * square_size, (self.j+1) * square_size,
-                                         fill=self.int_to_color(self.strength))
-
-    @staticmethod
-    def int_to_color(strength):
-        """
-        :param strength: a number between 0 and max_strength
-        :return: a string like "#RRGGBB" which can be interpreted as a color
-        (the more strength is high the reder is the color)
-        """
-        red = strength * 255 // max_strength
-        blue = 255 - red
-        green = 0
-        res = "#"
-        for i in [red, green, blue]:
-            if i < 16:
-                res += "0"+hex(i)[-1:].upper()
-            else:
-                res += hex(i)[-2:].upper()
-        return res
-
-    def erase(self):
-        """
-        Erase the sprite from canvas
-        """
-        canvas.delete(self.sprite)
-
-    def update(self, list_bot, list_gem):
-        """
-        Compute the input
-        Calculate the output
-        Move according to the output
-        and update the display
-        """
-        self.update_input(list_bot, list_gem)
-        self.update_output()
-        self.move()
-        self.display()
-
-    def update_input(self, list_bot, list_gem):
-        """
-        Check up, down, left and right to see if there is any foe or gem and update self.list_input accordingly
-        """
-        self.list_input = [0 for k in range(8)]
-        if Gem.detect_gem(self.i, self.j - 1, list_gem) is not None:
-            self.list_input[0] = 1
-        if Gem.detect_gem(self.i, self.j + 1, list_gem) is not None:
-            self.list_input[1] = 1
-        if Gem.detect_gem(self.i - 1, self.j, list_gem) is not None:
-            self.list_input[2] = 1
-        if Gem.detect_gem(self.i + 1, self.j, list_gem) is not None:
-            self.list_input[3] = 1
-        foe = self.detect_foe(self.i, self.j - 1, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[4] = 1
-            else:
-                self.list_input[4] = -1
-        foe = self.detect_foe(self.i, self.j + 1, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[5] = 1
-            else:
-                self.list_input[5] = -1
-        foe = self.detect_foe(self.i - 1, self.j, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[6] = 1
-            else:
-                self.list_input[6] = -1
-        foe = self.detect_foe(self.i + 1, self.j, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[7] = 1
-            else:
-                self.list_input[7] = -1
-
-    def detect_foe(self, i, j, list_bot):
-        """
-        Detect if there is a foe (a bot different than me) at the location i, j
-        :param i: the line
-        :param j: the column
-        :return: the foe if there is one, None if not.
-        """
-        k = 0
-        while k < len(list_bot):
-            foe = list_bot[k]
-            if foe.i == i and foe.j == j and self != foe:
-                return foe
-            k += 1
-        return None
-
-    def update_output(self):
-        """
-        Calculate each output of the neurons and
-        set list_output as the proper value.
-        """
-        temp_inputs = self.list_input[:]  # Copy the list
-        temp_outputs = []
-        for i_layer in range(len(self.list_neuron)):
-            # for each layer of neurons
-            for i_neuron in range(len(self.list_neuron[i_layer])):
-                # for each neuron in this layer
-                temp_outputs.append(self.list_neuron[i_layer][i_neuron].output(temp_inputs))
-                # we add to temp_outputs the output of the neuron self.list_neuron[i_layer][i_neuron]
-                # with temp_inputs as inputs
-            temp_inputs = temp_outputs[:]
-            temp_outputs = []
-        self.list_output = temp_inputs[:]
-
-    def move(self):
-        """
-        Check which out put is the "most activated" (which is higher) and move in that direction
-        :return:
-        """
-        i_max = max_index(self.list_output)
-        if i_max == 0 and self.j > 0:
-            self.j -= 1
-        elif i_max == 1 and self.j < height-1:
-            self.j += 1
-        elif i_max == 2 and self.i > 0:
-            self.i -= 1
-        elif i_max == 3 and self.i < width-1:
-            self.i += 1
-
-    def eat(self, list_bot, list_gem, list_dead_bot):
-        """
-        Check if there is a weaker foe or a Gem at my location, if so, eat it!
-        """
-        gem = Gem.detect_gem(self.i, self.j, list_gem)
-        if gem is not None:
-            if self.strength < max_strength:
-                self.strength += 1
-            gem.erase()
-            list_gem.remove(gem)
-        foe = self.detect_foe(self.i, self.j, list_bot)
-        if foe is not None:
-            if self.strength+5 <= max_strength:
-                self.strength += 5
-            foe.erase()
-            list_dead_bot.append(foe)
-            list_bot.remove(foe)
-
-    def mutation(self):
-        """
-        Change one weight on one neuron of the bot
-        """
-        layer = choice(self.list_neuron)
-        neuron = choice(layer)
-        neuron.mutation()
-
-
-class Gem:
-    """
-    This is a gem
-    """
-    def __init__(self, i, j):
-        self.i = i
-        self.j = j
-        self.marge = 2
-        self.sprite = canvas.create_rectangle(self.i * square_size + self.marge, self.j * square_size + self.marge,
-                                         (self.i + 1) * square_size - self.marge, (self.j+1) * square_size - self.marge,
-                                         fill=Gem.random_color())
-
-    def erase(self):
-        """
-        Erase the sprite from the canvas
-        """
-        canvas.delete(self.sprite)
-
-    @staticmethod
-    def random_color():
-        red = randrange(255)
-        blue = randrange(255)
-        green = randrange(255)
-        res = "#"
-        for i in [red, green, blue]:
-            if i < 16:
-                res += "0"+hex(i)[-1:].upper()
-            else:
-                res += hex(i)[-2:].upper()
-        return res
-
-    @staticmethod
-    def detect_gem(i, j, list_gem):
-        """
-        Detect if there is a foe at the location i,j
-        :param i: the line
-        :param j: the column
-        :return: the gem if there is one, None if there isn't
-        """
-        k = 0
-        while k < len(list_gem):
-            gem = list_gem[k]
-            if gem.i == i and gem.j == j:
-                return gem
-            k += 1
-        return None
-
+from random import random, randrange
+from copy import *
+from config import *
+from neuron import *
+from bot import *
+from gem import *
 
 # Genetic Algorithm
-def selection(nbr_to_choose, list_bot, list_dead_bot):
+
+def selection(list_of_bots, nbr_to_choose):
     """
-    Add list_dead bot to list_bot, then select the nbr_to_choose best
+    Sorts 'list_of_bots' and return a list with the 'nbr_to_choose' best bots
+    :param list_of_bots: list of bots from which to select
     :param nbr_to_choose: the number of bot to choose
-    :return: the list of the nbr_to_choose best bot
+    :return: the list of the 'nbr_to_choose' best bot
+
+    warning : this function will have for side effect to sort the list actual list
+              given in argument !!
+              The returned list, however, is completly independent from the one given
+              in argument !
     """
-    for b in list_dead_bot:
-        list_bot.append(b)
-    bot_sort(list_bot)
-    return list_bot[:nbr_to_choose]
+    bot_sort(list_of_bots)
+    return deepcopy(list_of_bots[:nbr_to_choose])
 
 
 def mate(best):
@@ -299,7 +33,7 @@ def mate(best):
     for k in range(len(best)):
         for i in range(4):
             temp = randrange(0, len(best))
-            while temp != i:
+            while temp == i:
                 temp = randrange(0, len(best))
             res.append(crossover(best[i], best[temp]))
     return res
@@ -312,49 +46,40 @@ def crossover(bot1, bot2):
     :param bot2:
     :return: a new bot with as many neurons from bot 1 than bot 2
     """
-    list_neuron = [[] for i in range(len(bot1.list_neuron))]
-    for i_layer in range(len(bot1.list_neuron)):
-        nbr_bot1 = 0
-        nbr_bot2 = 0
-        for i_neuron in range(len(bot1.list_neuron[i_layer])):
-            tau = (len(bot1.list_neuron[i_layer])/2 - nbr_bot1) / (len(bot1.list_neuron[i_layer]) - (nbr_bot1 + nbr_bot2))
-            p = random()
-            if p > tau:
-                list_neuron[i_layer] += [bot2.list_neuron[i_layer][i_neuron]]
-                nbr_bot2 += 1
+    list_layer = []
+    for i_layer in range(len(bot1.brain)):
+        list_neurons =[]
+        nbr_neuron_from_bot1 = len(bot1.brain[i_layer])//2
+        # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
+        index_of_neurons_from_bot_1 = []
+        for i in range(nbr_neuron_from_bot1):
+            index = randrange(len(bot1.brain[i_layer]))
+            while index in index_of_neurons_from_bot_1:    # We don't want the same index twice
+                index = randrange(len(bot1.brain[i_layer]))
+            index_of_neurons_from_bot_1.append(index)
+        for i in range(len(bot1.brain[i_layer])):
+            if i in index_of_neurons_from_bot_1:
+                list_neurons.append(deepcopy(bot1.brain[i_layer][i]))
             else:
-                list_neuron[i_layer] += [bot1.list_neuron[i_layer][i_neuron]]
-                nbr_bot1 += 1
-    bot3 = Bot(list_neuron, randrange(width), randrange(height))
+                list_neurons.append(deepcopy(bot2.brain[i_layer][i]))
+        layer = Layer(list_neurons)
+        list_layer.append(layer)
+    brain = Neural_network(list_layer)
+    bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT))
     return bot3
 
 
-def bot_sort(list_bot):
+def bot_sort(list_of_bots):
     """
-    sort the global list list_bot with strength decreasing
+    sort the list list_bot given in argument with strength decreasing
     """
-    for i in range(len(list_bot)-1):
-        if list_bot[i].strength < list_bot[i+1].strength:
-            list_bot[i], list_bot[i + 1] = list_bot[i + 1], list_bot[i]
+    for i in range(len(list_of_bots)-1):
+        if list_of_bots[i].strength < list_of_bots[i+1].strength:
+            list_of_bots[i], list_of_bots[i + 1] = list_of_bots[i + 1], list_of_bots[i]
             temp = i
-            while temp > 0 and list_bot[temp].strength > list_bot[temp-1].strength:
-                list_bot[temp], list_bot[temp - 1] = list_bot[temp - 1], list_bot[temp]
+            while temp > 0 and list_of_bots[temp].strength > list_of_bots[temp-1].strength:
+                list_of_bots[temp], list_of_bots[temp - 1] = list_of_bots[temp - 1], list_of_bots[temp]
                 temp -= 1
-
-
-# Useful stuff
-def max_index(list_int):
-    """
-    :param list_int: a list of numbers
-    :return: the index of the maximum
-    """
-    i_max = 0
-    maxi = - float('inf')
-    for i in range(len(list_int)):
-        if list_int[i] > maxi:
-            i_max = i
-            maxi = list_int[i]
-    return i_max
 
 
 # Generate a new level
@@ -375,54 +100,95 @@ def list_neuron_random(nbr_input, list_nbr_neurons):
 
 def generate_gem(list_gem):
     """
-    erase list_gem then generate nbr_gems Gems and puts them in list_gems
+    erase list_gem then generate NBR_GEMS Gems and puts them in list_gems
     """
     for gem in list_gem:
         gem.erase()
     list_gem.clear()
-    for i in range(nbr_gems):
-        list_gem.append(Gem(randrange(width), randrange(height)))
+    for i in range(NBR_GEMS):
+        list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
+
+def place_bots_in_line():
+    global list_bot
+
+    if len(list_bot) > WIDTH/2:
+        raise ValueError("too many bots to do that\n")
+
+    for i, bot in enumerate(list_bot):
+        bot.i = 2*i
+        bot.j = WIDTH-1
 
 def trigger_new_generation():
-    new_generation(list_bot, list_gem, list_dead_bot);
+    global list_bot
+    global list_gem
+    global list_dead_bot
+    global generation
+    new_generation(list_bot, list_gem, list_dead_bot, generation)
 
-def new_generation(list_bot, list_gem, list_dead_bot):
+def new_generation(list_bot, list_gem, list_dead_bot, generation):
     """
     Select the best from this generation
     Erase the old bots
     create the new bots
     and generate the gems
     """
-    best = selection((len(list_bot)+len(list_dead_bot))//4,list_bot,list_dead_bot)
+
+    # best = selection(7)
+
+    # for bot in list_bot:
+    #     bot.erase()
+    # list_bot.clear()
+
+    # for bot in mate(best):
+    #     list_bot.append(bot)
+    # list_dead_bot.clear()
+    # generate_gem(list_gem)
+
+    #gather every bot
+    list_bot += list_dead_bot
+
+    #empty list of dead bots
+    list_dead_bot.clear()
+
+    #remove everyone from display
     for bot in list_bot:
         bot.erase()
+
     list_bot.clear()
-    for bot in mate(best):
-        list_bot.append(bot)
-    list_dead_bot.clear()
+    #select the best NB_SELECT_BOT
+    for b in selection(list_bot, NB_SELECT_BOT):
+        #re-set the list of bots
+        list_bot.append(b)
+
+    print("\nchoosen bots :")
+    for bot in list_bot:
+        print(str(bot))
+
+    #calculate and print mean
+    sum = 0
+    for bot in list_bot:
+        sum += bot.strength
+    print("mean: " + str(sum/NB_SELECT_BOT))
+
+    #reset every bot that we have kept from the previous generation
+    for bot in list_bot:
+        bot.reset()
+
+    #complete the new generation with fresh random bots
+    generation += 1
+    for i in range(NBR_BOT - NB_SELECT_BOT):
+        list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), str(generation) + "th_gen_" + str(i)))
+
+    #generate a new set of gems
     generate_gem(list_gem)
 
-
-# Global Variables
-width = 60      # in square
-height = 60     # in square
-square_size = 10
-nbr_gems = 100
-fps = 30
-max_strength = 30
-
-# Creation of the graphic interface
-root = tk.Tk()
-canvas = tk.Canvas(root, width=width*square_size, height=height*square_size, background='white')
-canvas.pack(side="top")
-quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
-quit_button.pack()
-generation_button = tk.Button(root, text="New Generation", command=trigger_new_generation)
-generation_button.pack()
-
+    place_bots_in_line()
 
 # Main
 def trigger_main():
+    global list_bot
+    global list_gem
+    global list_dead_bot
     main(list_bot, list_gem, list_dead_bot)
 
 
@@ -436,15 +202,22 @@ def main(list_bot, list_gem, list_dead_bot):
         bot.update(list_bot, list_gem)
     for bot in list_bot:
         bot.eat(list_bot, list_gem, list_dead_bot)
-    root.after(1000 // fps, trigger_main)
+    root.after(1000 // FPS, trigger_main)
 
+# Creation of the graphic interface
+quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
+quit_button.pack(side="right")
+generation_button = tk.Button(root, text="New Generation", command=trigger_new_generation)
+generation_button.pack(side="right")
 
 if __name__ == '__main__':
+    generation = 1
     list_bot = []
     list_dead_bot = []
     list_gem = []
     generate_gem(list_gem)
-    for i in range(28):
-        list_bot.append(Bot(list_neuron_random(8,[4]), randrange(width), randrange(height)))
+    for i in range(NBR_BOT):
+        list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+    place_bots_in_line()
     main(list_bot, list_gem, list_dead_bot)
     root.mainloop()
