@@ -1,5 +1,5 @@
 from math import exp
-from random import random, randrange
+from random import random, randrange, choice
 import tkinter as tk
 
 
@@ -219,6 +219,14 @@ class Bot:
             list_dead_bot.append(foe)
             list_bot.remove(foe)
 
+    def mutation(self):
+        """
+        Change one weight on one neuron of the bot
+        """
+        layer = choice(self.list_neuron)
+        neuron = choice(layer)
+        neuron.mutation()
+
 
 class Gem:
     """
@@ -269,27 +277,27 @@ class Gem:
 
 
 # Genetic Algorithm
-def selection(nbr_to_choose):
+def selection(nbr_to_choose, list_bot, list_dead_bot):
     """
     Add list_dead bot to list_bot, then select the nbr_to_choose best
     :param nbr_to_choose: the number of bot to choose
     :return: the list of the nbr_to_choose best bot
     """
-    global list_bot
-    list_bot += list_dead_bot
-    bot_sort()
+    for b in list_dead_bot:
+        list_bot.append(b)
+    bot_sort(list_bot)
     return list_bot[:nbr_to_choose]
 
 
 def mate(best):
     """
     Mate the best bot with each other
-    :param best: the bots to mate
-    :return: the list of the bots created
+    :param best: the bots to mate of len l
+    :return: the list of the bots created of len l*4
     """
     res = []
-    for k in range(len(best)//2):
-        for i in range(len(best)):
+    for k in range(len(best)):
+        for i in range(4):
             temp = randrange(0, len(best))
             while temp != i:
                 temp = randrange(0, len(best))
@@ -299,12 +307,12 @@ def mate(best):
 
 def crossover(bot1, bot2):
     """
-    Create a new bot with the crossover and the mutation method
+    Create a new bot with the crossover
     :param bot1:
     :param bot2:
-    :return: a new bot
+    :return: a new bot with as many neurons from bot 1 than bot 2
     """
-    list_neuron = [[], []]
+    list_neuron = [[] for i in range(len(bot1.list_neuron))]
     for i_layer in range(len(bot1.list_neuron)):
         nbr_bot1 = 0
         nbr_bot2 = 0
@@ -317,18 +325,14 @@ def crossover(bot1, bot2):
             else:
                 list_neuron[i_layer] += [bot1.list_neuron[i_layer][i_neuron]]
                 nbr_bot1 += 1
-            if random() < 1/9:
-                neuron = list_neuron[i_layer][i_neuron]
-                neuron.mutation()     # Attention mutation
     bot3 = Bot(list_neuron, randrange(width), randrange(height))
     return bot3
 
 
-def bot_sort():
+def bot_sort(list_bot):
     """
-    sort the global list list_bot with strength increasing
+    sort the global list list_bot with strength decreasing
     """
-    global list_bot
     for i in range(len(list_bot)-1):
         if list_bot[i].strength < list_bot[i+1].strength:
             list_bot[i], list_bot[i + 1] = list_bot[i + 1], list_bot[i]
@@ -389,7 +393,7 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     create the new bots
     and generate the gems
     """
-    best = selection(7)
+    best = selection((len(list_bot)+len(list_dead_bot))//4,list_bot,list_dead_bot)
     for bot in list_bot:
         bot.erase()
     list_bot.clear()

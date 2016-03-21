@@ -57,11 +57,14 @@ class MyTestCase(unittest.TestCase):
         self.assertListEqual(list_bot, [b1])
         self.assertListEqual(list_dead_bot,[b2])
 
-
-
-
-
-
+    def test_selection(self):
+        list_bot = []
+        for i in range(max_strength):
+            list_bot.append(Bot(list_neuron_random(8,[4]),0,0))
+            list_bot[i].strength = randrange(max_strength)
+        best = selection(10, list_bot, [])
+        for i in range(len(best)-1):
+            self.assertGreaterEqual(best[i].strength, best[i+1].strength)
 
 if __name__ == '__main__':
     unittest.main()
