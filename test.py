@@ -56,7 +56,6 @@ class MyTestCase(unittest.TestCase):
         self.assertListEqual(list_bot, [b1])
         self.assertListEqual(list_dead_bot,[b2])
 
-
     def test_selection(self):
         list_bot = []
         for i in range(MAX_STRENGTH):
@@ -88,6 +87,14 @@ class MyTestCase(unittest.TestCase):
                 if neuron.list_weight[0] == 1:
                     nbr_from_bot1 += 1
             self.assertEqual(nbr_from_bot1, len(layer)//2)
+
+    def test_mate(self):
+        list_bot = []
+        for i in range(10):
+            list_bot.append(Bot(8, Neural_network([4], 8), 0, 0))
+        listing_mate = mate(list_bot)
+        for (b1,b2) in listing_mate:
+            self.assertNotEqual(b1, b2)
 
 
 if __name__ == '__main__':

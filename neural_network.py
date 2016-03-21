@@ -86,13 +86,13 @@ class Neural_network:
         return self.nbr_layer
 
     def __getitem__(self, key):
-        if(key >= self.nbr_layer):
-            raise ValueError("in 'Layer.__getitem__()' : No such layer. There is only " + str(nbr_layer) + ", you asked for 'neural_network[" + str(key) + "]'.\n")
+        if key >= self.nbr_layer:
+            raise ValueError("in 'Layer.__getitem__()' : No such layer. There is only " + str(self.nbr_layer) + ", you asked for 'neural_network[" + str(key) + "]'.\n")
         return self.layers[key]
 
     def __setitem__(self, key, value):
         if(key >= self.nbr_layer):
-            raise valueError("in 'Layer.__setitem__()' : No such layer. There is only " + str(nbr_layer) + ", you asked for 'neural_network[" + str(key) + "]'.\n")
+            raise ValueError("in 'Layer.__setitem__()' : No such layer. There is only " + str(self.nbr_layer) + ", you asked for 'neural_network[" + str(key) + "]'.\n")
 
         if not isinstance(value, Layer):
             raise TypeError("in 'Layer.__setitem__()' : neural_network only contains layers, not " + str(type(value)) + "s.\n")
