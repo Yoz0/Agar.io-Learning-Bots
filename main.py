@@ -100,7 +100,7 @@ def list_neuron_random(nbr_input, list_nbr_neurons):
 
 def generate_gem(list_gem):
     """
-    erase list_gem then generate NBR_GEMS Gems and puts them in list_gems
+    erase list_gem then generate NBR_GEMS Gems and puts them in list_gem
     """
     for gem in list_gem:
         gem.erase()
@@ -108,11 +108,11 @@ def generate_gem(list_gem):
     for i in range(NBR_GEMS):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
-def place_bots_in_line(list_bot):
-    if len(list_bot) > WIDTH/2:
+def place_bots_in_line(list_of_bots):
+    if len(list_of_bots) > WIDTH/2:
         raise ValueError("too many bots to do that\n")
 
-    for i, bot in enumerate(list_bot):
+    for i, bot in enumerate(list_of_bots):
         bot.i = 2*i
         bot.j = HEIGHT-1
 
@@ -184,13 +184,47 @@ def new_generation(list_bot, list_gem, list_dead_bot):
 
     place_bots_in_line(list_bot)
 
+def trigger_bring_to_life():
+    global list_bot
+    global list_dead_bot
+    bring_to_life(list_bot, list_dead_bot)
+
+def bring_to_life(list_bot, list_dead_bot):
+    """This function will bring every bot to life, and replace them on the side
+    it will not reset their strength ! The purpose of this function is to let
+    more time to bots to prove their value, before selecting them"""
+
+    list_bot += list_dead_bot
+    list_dead_bot.clear()
+    place_bots_in_line(list_bot)
+    for bot in list_bot:
+        bot.erase()
+
+def trigger_more_gems():
+    global list_gem
+    more_gems(list_gem)
+
+def more_gems(list_gem):
+    for i in range(100):
+        list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
+
+def trigger_reset_gems():
+    global list_gem
+    generate_gem(list_gem)
+
+def trigger_another_chance():
+    global list_gem
+    global list_bot
+    global list_dead_bot
+    generate_gem(list_gem)
+    bring_to_life(list_bot, list_dead_bot)
+
 # Main
 def trigger_main():
     global list_bot
     global list_gem
     global list_dead_bot
     main(list_bot, list_gem, list_dead_bot)
-
 
 def main(list_bot, list_gem, list_dead_bot):
     """
@@ -209,12 +243,25 @@ def main(list_bot, list_gem, list_dead_bot):
     root.after(1000 // FPS, trigger_main)
 
 # Creation of the graphic interface
-generation_text = tk.Label(root, text="Generation : 1")
-generation_text.pack(side="left")
-quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
-quit_button.pack(side="right")
-generation_button = tk.Button(root, text="New Generation", command=trigger_new_generation)
-generation_button.pack(side="right")
+frame_left = tk.Frame(root)
+frame_left.pack(side = "left")
+frame_right = tk.Frame(root)
+frame_right.pack(side = "right")
+
+quit_button = tk.Button(frame_left, text="QUIT", fg="red", command=root.destroy)
+quit_button.pack()
+generation_button = tk.Button(frame_left, text="New Generation", command=trigger_new_generation)
+generation_button.pack()
+button_bring_to_life = tk.Button(frame_right, text="Bring everyone to life", command=trigger_bring_to_life)
+button_bring_to_life.pack()
+button_more_gems = tk.Button(frame_right, text="MOAR GEMS", command=trigger_more_gems)
+button_more_gems.pack()
+button_reset_gems = tk.Button(frame_right, text="reset gems", command=trigger_reset_gems)
+button_reset_gems.pack()
+button_another_chance = tk.Button(frame_left, text="another chance", command=trigger_another_chance)
+button_another_chance.pack()
+generation_text = tk.Label(frame_left, text="Generation : 1")
+generation_text.pack()
 
 if __name__ == '__main__':
     generation = 1

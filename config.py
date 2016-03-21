@@ -11,7 +11,7 @@ import tkinter as tk
 WIDTH = 60      # in square
 HEIGHT = 60     # in square
 SQUARE_SIZE = 10
-NBR_GEMS = 100
+NBR_GEMS = 200
 NBR_BOT = 30
 FPS = 120
 MAX_STRENGTH = 30
