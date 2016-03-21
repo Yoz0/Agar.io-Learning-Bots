@@ -51,6 +51,8 @@ class MyTestCase(unittest.TestCase):
         b1.move()
         self.assertEqual(b1.i, 0)
         self.assertEqual(b1.j, 1)
+        b2.eat(list_bot,list_gem,list_dead_bot)
+        self.assertListEqual(list_dead_bot, [])    # b1 should not be eaten
         b1.eat(list_bot,list_gem,list_dead_bot)
         self.assertEqual(b1.strength, 6)
         self.assertListEqual(list_bot, [b1])

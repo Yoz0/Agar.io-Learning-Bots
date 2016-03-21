@@ -13,9 +13,10 @@ HEIGHT = 60     # in square
 SQUARE_SIZE = 10
 NBR_GEMS = 100
 NBR_BOT = 30
-FPS = 20
+FPS = 60
 MAX_STRENGTH = 30
-NB_SELECT_BOT = 5
+NB_SELECT_BOT = 10
+NB_TURN_GENERATION = 90
 
 # GLOBAL VARIABLES #################################################################
 root = tk.Tk()

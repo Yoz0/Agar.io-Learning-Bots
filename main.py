@@ -27,11 +27,11 @@ def mate(best):
     """
     Mate the best bot with each other
     :param best: the bots to mate of len l
-    :return: the list of the bots to crossover of len l*4
+    :return: the list of the bots to crossover of len l*3
     """
     res = []
     for k in range(len(best)):
-        for i in range(4):
+        for i in range(3):
             temp = randrange(0, len(best))
             while temp == k:
                 temp = randrange(0, len(best))
@@ -120,17 +120,17 @@ def trigger_new_generation():
     global list_bot
     global list_gem
     global list_dead_bot
-    global generation
-    new_generation(list_bot, list_gem, list_dead_bot, generation)
+    new_generation(list_bot, list_gem, list_dead_bot)
 
-def new_generation(list_bot, list_gem, list_dead_bot, generation):
+def new_generation(list_bot, list_gem, list_dead_bot):
     """
     Select the best from this generation
     Erase the old bots
     create the new bots
     and generate the gems
     """
-
+    global turn
+    global generation
     # best = selection(7)
 
     # for bot in list_bot:
@@ -174,6 +174,9 @@ def new_generation(list_bot, list_gem, list_dead_bot, generation):
         list_bot.append(crossover(b1, b2))
 
     generation += 1
+    generation_text.configure(text="Generation : "+str(generation))
+    generation_text.update()
+    turn = 0
 
     #generate a new set of gems
     generate_gem(list_gem)
@@ -194,13 +197,19 @@ def main(list_bot, list_gem, list_dead_bot):
     make them eat
     and relaunch the function main after a little time
     """
+    global turn
+    turn += 1
     for bot in list_bot:
         bot.update(list_bot, list_gem)
     for bot in list_bot:
         bot.eat(list_bot, list_gem, list_dead_bot)
+    if turn > NB_TURN_GENERATION:
+        trigger_new_generation()
     root.after(1000 // FPS, trigger_main)
 
 # Creation of the graphic interface
+generation_text = tk.Label(root, text="Generation : 1")
+generation_text.pack(side="left")
 quit_button = tk.Button(root, text="QUIT", fg="red", command=root.destroy)
 quit_button.pack(side="right")
 generation_button = tk.Button(root, text="New Generation", command=trigger_new_generation)
@@ -208,6 +217,7 @@ generation_button.pack(side="right")
 
 if __name__ == '__main__':
     generation = 1
+    turn = 0
     list_bot = []
     list_dead_bot = []
     list_gem = []
