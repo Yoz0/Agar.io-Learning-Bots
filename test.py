@@ -22,8 +22,8 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(g1.detect_gem(0, 1, list_gem), None)
 
     def test_Bot(self):
-        b1 = Bot(8, Neural_network([4], 8),0,0)
-        b2 = Bot(8, Neural_network([4], 8), 0, 1)  # b2 is just below b1
+        b1 = Bot.quick_init(0, 0)
+        b2 = Bot.quick_init(0, 1)  # b2 is just below b1
         list_bot = [b1, b2]
         list_dead_bot = []
         g1 = Gem(0, 0)
@@ -61,7 +61,7 @@ class MyTestCase(unittest.TestCase):
     def test_selection(self):
         list_bot = []
         for i in range(MAX_STRENGTH):
-            list_bot.append(Bot(8, Neural_network([4], 8),0,0))
+            list_bot.append(Bot.quick_init())
             list_bot[i].strength = randrange(MAX_STRENGTH)
         best = selection(list_bot, 10)
         for i in range(len(best)-1):
@@ -74,8 +74,8 @@ class MyTestCase(unittest.TestCase):
             ll1 = []
             ll2 = []
             for i_neuron in range(4):
-                ll1.append(Neuron([0,0,0,0]))
-                ll2.append(Neuron([1,1,1,1]))
+                ll1.append(Neuron([0, 0, 0, 0]))
+                ll2.append(Neuron([1, 1, 1, 1]))
             lb1.append(Layer(ll1))
             lb2.append(Layer(ll2))
         b1 = Neural_network(lb1)
@@ -93,9 +93,9 @@ class MyTestCase(unittest.TestCase):
     def test_mate(self):
         list_bot = []
         for i in range(10):
-            list_bot.append(Bot(8, Neural_network([4], 8), 0, 0))
+            list_bot.append(Bot.quick_init())
         listing_mate = mate(list_bot)
-        for (b1,b2) in listing_mate:
+        for (b1, b2) in listing_mate:
             self.assertNotEqual(b1, b2)
 
 

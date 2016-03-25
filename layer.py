@@ -1,6 +1,7 @@
 from copy import *
 from neuron import *
 
+
 class Layer:
     """
     This class represents a layer of neurons, as defined here:
@@ -12,43 +13,39 @@ class Layer:
     yield the result of every neuron of the layer, in the form of a list.
     """
 
-    def __init__(self, arg1, arg2 = None):
+    def __init__(self,list_neuron):
         """
-        Method 1 : my_layer = Layer(nbr_neuron, nbr_input)
-            Inits a layer that has 'nbr_neuron' neurons that all take 'nbr_input' inputs
-            :param nbr_neuron: nbr of neurons in the layer
-            :param nbr_input: nbr of input every neuron takes
-            if this layer is an intermediate layer, then 'nbr_input' has to be equal
-            to the number of neurons in the previous layer, for each of these neurons
-            yieldsone output.
-        Method 2 : my_layer = Layer(list_neurons)
-            Inits a layer from a list of existing neuron.
-            All neurons have to take the same number of input.
+        Inits a layer from a list of existing neuron.
+        All neurons have to take the same number of input.
         """
+        #check if arg1 is a list of neurons
+        for a in list_neuron:
+            if not isinstance(a, Neuron):
+                raise TypeError("In 'Layer.__init__()' : The list you provided does not only contain neurons. It should.")
+        #method 2
+        self.neurons = deepcopy(list_neuron)
+        self.nbr_neuron = len(self.neurons)
+        self.nbr_input = self.neurons[0].nbr_input
 
-        if isinstance(arg1, int) and isinstance(arg2, int):
-            #method 1
-            self.nbr_neuron = arg1
-            self.nbr_input = arg2
-            self.neurons = []
-            for i in range(self.nbr_neuron):
-                self.neurons.append(Neuron(self.nbr_input))
-        elif arg2 == None and isinstance(arg1, list):
-            #check if arg1 is a list of neurons
-            for a in arg1:
-                if not isinstance(a, Neuron):
-                    raise TypeError("In 'Layer.__init__()' : The list you provided does not only contain neurons. It should.")
-            #method 2
-            self.neurons = deepcopy(arg1)
-            self.nbr_neuron = len(self.neurons)
-            self.nbr_input = self.neurons[0].nbr_input
+        #check if every neuron has the same number of input
+        for neuron in self.neurons:
+            if neuron.nbr_input != self.nbr_input:
+                raise ValueError("In 'Layer.__init__()' : the neurons you provided do not all take the same number of input.\n")
 
-            #check if every neuron has the same number of input
-            for neuron in self.neurons:
-                if neuron.nbr_input != self.nbr_input:
-                    raise ValueError("In 'Layer.__init__()' : the neurons you provided do not all take the same number of input.\n")
-        else:
-            raise TypeError("In 'Layer.__init__()' : wrong arguments passed.\n")
+    @staticmethod
+    def random_init(nbr_neuron, nbr_input):
+        """
+        Inits a layer that has 'nbr_neuron' neurons that all take 'nbr_input' inputs
+        :param nbr_neuron: nbr of neurons in the layer
+        :param nbr_input: nbr of input every neuron takes
+        if this layer is an intermediate layer, then 'nbr_input' has to be equal
+        to the number of neurons in the previous layer, for each of these neurons
+        yieldsone output.
+        """
+        neurons = []
+        for i in range(nbr_neuron):
+            neurons.append(Neuron.random_init(nbr_input))
+        return Layer(neurons)
 
     def get_output(self, list_input):
         """

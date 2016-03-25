@@ -1,55 +1,49 @@
 from copy import *
 from layer import *
 
+
 class Neural_network:
     """This class represents a neural network that can have several layers.
     A neural network takes a given number of inputs and yields the same number
     of outputs as the number of neurons in the last layer"""
 
-    def __init__(self, arg1, arg2 = None):
+    def __init__(self, list_layers):
         """
-        method 1 : my_net = neural_network(list_sizes, nbr_input)
-            inits a neural network that has 'len(list_sizes)' layers, their respective
-            size (number of neurons in the given layer) should be given by list_sizes,
-            where list_sizes[n] is the size of the nth layer
-        method 2: my_net = neural_network(list_layers)
             inits a neural network that has list_layers for layers. This function
             also check the validity of such a network (it checks if every layer takes
             as much input as there is neurons in the previous layer)
         """
+        # check if list_layers is a list of layers
+        for a in list_layers:
+            if not isinstance(a, Layer):
+                raise TypeError("In 'Neural_network.__init__()' : The list you provided does not only contain Layers. It should.")
+        self.layers = deepcopy(list_layers)
+        self.nbr_layer = len(self.layers)
+        self.nbr_input = self.layers[0].nbr_input
 
-        if  isinstance(arg1, list) and isinstance(arg2, int):
-            #method 1
-            list_sizes = arg1
-            nbr_input = arg2
+        cur_nbr_input = self.nbr_input
+        for layer in self.layers:
+            if layer.nbr_input != cur_nbr_input:
+                raise ValueError("In 'Neural_network.__init__() : the layers provided do not form a valid network\n")
+            cur_nbr_input = layer.nbr_neuron
 
-            self.layers = []
-            self.nbr_layer = len(list_sizes)
-            self.nbr_input = nbr_input
+    @staticmethod
+    def random_init(list_sizes, nbr_input):
+        """
+        inits a neural network that has 'len(list_sizes)' layers, their respective
+        size (number of neurons in the given layer) should be given by list_sizes,
+        where list_sizes[n] is the size of the nth layer
+        """
+        list_layers = []
+        cur_nbr_input = nbr_input   # needed to make every layer take the same number
+                                    # of input that the previous layer had neurons
+        for i in range(len(list_sizes)):
+            list_layers.append(Layer.random_init(list_sizes[i], cur_nbr_input))
+        return Neural_network(list_layers)
 
-            cur_nbr_input = nbr_input   #needed to make every layer take the same number
-                                        #of input that the previous layer had neurons
-            for i in range(self.nbr_layer):
-                self.layers.append(Layer(list_sizes[i], cur_nbr_input))
-                cur_nbr_input = list_sizes[i]
-        elif isinstance(arg1, list) and arg2 == None:
-            #check if arg1 is a list of layers
-            for a in arg1:
-                if not isinstance(a, Layer):
-                    raise TypeError("In 'Neural_network.__init__()' : The list you provided does not only contain Layers. It should.")
-
-            #method 2
-            self.layers = deepcopy(arg1)
-            self.nbr_layer = len(self.layers)
-            self.nbr_input = self.layers[0].nbr_input
-
-            cur_nbr_input = self.nbr_input
-            for layer in self.layers:
-                if layer.nbr_input != cur_nbr_input:
-                    raise ValueError("In 'Neural_network.__init__() : the layers provided do not form a valid network\n")
-                cur_nbr_input = layer.nbr_neuron
-        else:
-            raise TypeError("In 'Neural_network.__init__()': wrong arguments.\n")
+    @staticmethod
+    def quick_init():
+        return Neural_network.random_init(LIST_SIZES, NBR_INPUT)
 
     def get_output(self, inputs):
         """
@@ -57,16 +51,13 @@ class Neural_network:
         from one layer to the following. returns the output from the last layer 
         """
 
-        #protection
+        # protection
         if len(inputs) != self.nbr_input:
-            raise TypeError("In 'Neural_network.get_output()': wrong number of input. Given " + str(len(inputs)) + " needed " + str(len(self.nbr_input)) + ".\n")
-
-        cur_input = []        #will hold the successive result of each layer
+            raise TypeError("In 'Neural_network.get_output()': wrong number of input. Given " + str(len(inputs)) +
+                            " needed " + str(len(self.nbr_input)) + ".\n")
         cur_input = inputs
-
         for layer in self.layers:
             cur_input = layer.get_output(cur_input)
-
         return cur_input
 
     def __repr__(self):
@@ -75,7 +66,6 @@ class Neural_network:
         for i, layer in enumerate(self.layers):
             res += "Layer " + str(i) + " :\n"
             res += str(layer)
-
         return res
 
     #The following functions were created in order to meet python's protocol for

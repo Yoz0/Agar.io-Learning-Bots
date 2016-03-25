@@ -11,7 +11,7 @@ class Bot:
     This is a bot.
     """
 
-    def __init__(self, nbr_input, brain, i, j, name = "unnamed"):
+    def __init__(self, nbr_input, brain, i, j, name="unnamed"):
         """
         inits a bot whose brain is made of a neural network. The neural network
         structure is given by 'list_sizes' where 'list_sizes[n]' is the size of the
@@ -28,6 +28,10 @@ class Bot:
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
         self.sprite = None
 
+    @staticmethod
+    def quick_init(i=0, j=0, name="unnamed"):
+        return Bot(NBR_INPUT, Neural_network.quick_init(), i, j, name)
+
     def get_name(self):
         return self.name
 
@@ -36,7 +40,7 @@ class Bot:
         res += " position: i = " + str(self.i) + " ; j = " + str(self.j)
         res += "Strength: " + str(self.strength)
         res += "\n Neurons:\n"
-        for i, layer in ennumerate(brain):
+        for i, layer in self.brain.__enumerate__():
             for neuron in layer:
                 res += "Layer " + i + " - "
                 res += str(neuron)
@@ -48,7 +52,7 @@ class Bot:
         return self.get_name() + " Strength: " + str(self.strength)
 
     def reset(self):
-        """keeps the brain as it is, but resets the strengh and the position"""
+        """keeps the brain as it is, but resets the strength and the position"""
         self.i = randrange(WIDTH)
         self.j = randrange(HEIGHT)
         self.strength = 0
@@ -182,7 +186,7 @@ class Bot:
 
         foe = self.detect_foe(self.i, self.j, list_bot)
         if foe is not None:
-            if(foe.strength <= self.strength):
+            if foe.strength <= self.strength:
                 for i in range(5):
                     if self.strength+1 <= MAX_STRENGTH:
                         self.strength += 1

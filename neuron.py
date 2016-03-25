@@ -6,21 +6,28 @@ from config import *
 class Neuron:
     """ This is a neuron
     """
-    def __init__(self, arg1):
+    def __init__(self, list_weight):
         """
-        method 1 : my_neuron = Neuron(nbr_input)
-            Inits a neuron that takes 'nbr_input' inputs, and has random weights.
-        method 2 : my_neuron = Neuron(list_weight)
-            Inits a neuron that has list_weight as weights, and as many inputs
+        Inits a neuron that has list_weight as weights
         """
-        if isinstance(arg1, int):
-            #method 1
-            self.nbr_input = arg1
-            self.list_weight = Neuron.list_weight_random(self.nbr_input)
-        elif isinstance(arg1, list):
-            #method 2
-            self.list_weight = arg1
-            self.nbr_input = len(self.list_weight)
+        self.list_weight = list_weight
+        self.nbr_input = len(self.list_weight)
+
+    @staticmethod
+    def random_init(nbr_input):
+        """
+        Inits a neuron that takes 'nbr_input' inputs, and has random weights.
+        :param nbr_input: the number of inputs of the neuron
+        :return: a Neuron
+        """
+        return Neuron([Neuron.random_weight() for i in range(nbr_input)])
+
+    @staticmethod
+    def random_weight():
+        """
+        :return: a random weight between -1 and 1
+        """
+        return random()*2-1
 
     def __str__(self):
         return "id : " + str(id(self)) + " list of weight" + str(self.list_weight)
@@ -39,25 +46,7 @@ class Neuron:
 
     def mutation(self):
         """
-        Change randomly one weight on the list_weight
+        Change randomly one weight of this neuron
         """
         i = randrange(self.nbr_input)
         self.list_weight[i] = Neuron.random_weight()
-
-    @staticmethod
-    def random_weight():
-        """
-        :return: a random weight between -1 and 1
-        """
-        return random()*2-1
-
-    @staticmethod
-    def list_weight_random(nbr_input):
-        """
-        :param nbr_input: the size of the desired list
-        :return: a list of random weight.
-        """
-        res = []
-        for i in range(nbr_input):
-            res.append(Neuron.random_weight())
-        return res

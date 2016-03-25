@@ -5,8 +5,8 @@ from neuron import *
 from bot import *
 from gem import *
 
-# Genetic Algorithm
 
+# Genetic Algorithm
 def selection(list_of_bots, nbr_to_choose):
     """
     Sorts 'list_of_bots' and return a list with the 'nbr_to_choose' best bots
@@ -83,20 +83,6 @@ def bot_sort(list_of_bots):
 
 
 # Generate a new level
-def list_neuron_random(nbr_input, list_nbr_neurons):
-    """
-    Create a list of two list of neurons
-    :param nbr_input: the number of inputs for the neuron on the first layer
-    :param list_nbr_neurons: the list of with the number of neuron we want in the layer i in list_nbr_neurons[i]
-    :return: the list of list of neurons
-    """
-    res = [[] for i in range(len(list_nbr_neurons))]
-    for i_layer in range(len(res)):
-        for i_neuron in range(list_nbr_neurons[i_layer]):
-            res[i_layer].append(Neuron(nbr_input))
-        nbr_input = len(res[i_layer])   # Now the nbr_input is the number of neurons in the previous layer
-    return res
-
 
 def generate_gem(list_gem):
     """
@@ -108,6 +94,7 @@ def generate_gem(list_gem):
     for i in range(NBR_GEMS):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
+
 def place_bots_in_line(list_of_bots):
     if len(list_of_bots) > WIDTH/2:
         raise ValueError("too many bots to do that\n")
@@ -116,11 +103,13 @@ def place_bots_in_line(list_of_bots):
         bot.i = 2*i
         bot.j = HEIGHT-1
 
+
 def trigger_new_generation():
     global list_bot
     global list_gem
     global list_dead_bot
     new_generation(list_bot, list_gem, list_dead_bot)
+
 
 def new_generation(list_bot, list_gem, list_dead_bot):
     """
@@ -184,10 +173,12 @@ def new_generation(list_bot, list_gem, list_dead_bot):
 
     place_bots_in_line(list_bot)
 
+
 def trigger_bring_to_life():
     global list_bot
     global list_dead_bot
     bring_to_life(list_bot, list_dead_bot)
+
 
 def bring_to_life(list_bot, list_dead_bot):
     """This function will bring every bot to life, and replace them on the side
@@ -200,17 +191,21 @@ def bring_to_life(list_bot, list_dead_bot):
     for bot in list_bot:
         bot.erase()
 
+
 def trigger_more_gems():
     global list_gem
     more_gems(list_gem)
+
 
 def more_gems(list_gem):
     for i in range(100):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
+
 def trigger_reset_gems():
     global list_gem
     generate_gem(list_gem)
+
 
 def trigger_another_chance():
     global list_gem
@@ -219,12 +214,14 @@ def trigger_another_chance():
     generate_gem(list_gem)
     bring_to_life(list_bot, list_dead_bot)
 
+
 # Main
 def trigger_main():
     global list_bot
     global list_gem
     global list_dead_bot
     main(list_bot, list_gem, list_dead_bot)
+
 
 def main(list_bot, list_gem, list_dead_bot):
     """
@@ -271,7 +268,7 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+        list_bot.append(Bot.quick_init())
     place_bots_in_line(list_bot)
     main(list_bot, list_gem, list_dead_bot)
     root.mainloop()

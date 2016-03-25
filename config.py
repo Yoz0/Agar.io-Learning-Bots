@@ -17,7 +17,9 @@ FPS = 240
 MAX_STRENGTH = 30
 NB_SELECT_BOT = 5
 NB_TURN_GENERATION = 90
-FILE_RES = open("res.data",'w')
+FILE_RES = open("res.data", 'w')
+LIST_SIZES = [4]
+NBR_INPUT = 8
 
 # GLOBAL VARIABLES #################################################################
 root = tk.Tk()
