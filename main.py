@@ -141,7 +141,7 @@ def new_generation(list_bot, list_gem, list_dead_bot):
         list_bot.append(b1.mate_with(b2))
 
     generation += 1
-    generation_text.configure(text="Generation : "+str(generation))
+    generation_text.configure(text="Generation : " + str(generation))
     generation_text.update()
     turn = 0
 
@@ -186,17 +186,17 @@ def trigger_another_chance():
     bring_to_life(list_bot, list_dead_bot)
 
 # Main
-def trigger_main():
+def trigger_game():
     global list_bot
     global list_gem
     global list_dead_bot
-    main(list_bot, list_gem, list_dead_bot)
+    game(list_bot, list_gem, list_dead_bot)
 
-def main(list_bot, list_gem, list_dead_bot):
+def game(list_bot, list_gem, list_dead_bot):
     """
     update the bots in list_bot
     make them eat
-    and relaunch the function main after a little time
+    and relaunch the function game after a little time
     """
     global turn
     turn += 1
@@ -206,7 +206,7 @@ def main(list_bot, list_gem, list_dead_bot):
         bot.eat(list_bot, list_gem, list_dead_bot)
     if turn > NB_TURN_GENERATION:
         trigger_new_generation()
-    root.after(1000 // FPS, trigger_main)
+    root.after(1000 // FPS, trigger_game)
 
 # Creation of the graphic interface
 frame_left = tk.Frame(root)
@@ -239,6 +239,6 @@ if __name__ == '__main__':
     for i in range(NBR_BOT):
         list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
     place_bots_in_line(list_bot)
-    main(list_bot, list_gem, list_dead_bot)
+    game(list_bot, list_gem, list_dead_bot)
     root.mainloop()
     FILE_RES.close()

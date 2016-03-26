@@ -62,7 +62,7 @@ class Bot:
         for i_layer, layer in enumerate(self.brain):
             list_neurons = []   #neurons in the current layer of the neural net of bot3
             nbr_neuron_from_bot1 = len(layer)//2
-            
+
             # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
             index_of_neurons_from_bot_1 = []
             for i in range(nbr_neuron_from_bot1):
