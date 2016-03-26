@@ -137,10 +137,10 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     mating_list = get_mating_list(best, NBR_BOT)
 
     #crossover the bots
-    for (b1, b2) in mating_list:
-        list_bot.append(b1.mate_with(b2))
-
     generation += 1
+    for i, (b1, b2) in enumerate(mating_list):
+        list_bot.append(b1.mate_with(b2, str(generation) + "th_gen_" + str(i)))
+
     generation_text.configure(text="Generation : " + str(generation))
     generation_text.update()
     turn = 0
@@ -185,6 +185,10 @@ def trigger_another_chance():
     generate_gem(list_gem)
     bring_to_life(list_bot, list_dead_bot)
 
+def toggle_auto_gen():
+    global auto_gen
+    auto_gen = not auto_gen
+
 # Main
 def trigger_game():
     global list_bot
@@ -199,12 +203,15 @@ def game(list_bot, list_gem, list_dead_bot):
     and relaunch the function game after a little time
     """
     global turn
+    global auto_gen
+
     turn += 1
     for bot in list_bot:
         bot.update(list_bot, list_gem)
     for bot in list_bot:
         bot.eat(list_bot, list_gem, list_dead_bot)
-    if turn > NB_TURN_GENERATION:
+
+    if turn > NB_TURN_GENERATION and auto_gen == 1:
         trigger_new_generation()
     root.after(1000 // FPS, trigger_game)
 
@@ -228,10 +235,13 @@ button_another_chance = tk.Button(frame_left, text="another chance", command=tri
 button_another_chance.pack()
 generation_text = tk.Label(frame_left, text="Generation : 1")
 generation_text.pack()
+auto_pass_generation = tk.Checkbutton(frame_right, text="disable automatic generations", command=toggle_auto_gen)
+auto_pass_generation.pack()
 
 if __name__ == '__main__':
     generation = 1
     turn = 0
+    auto_gen = 1
     list_bot = []
     list_dead_bot = []
     list_gem = []

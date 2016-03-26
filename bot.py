@@ -47,15 +47,15 @@ class Bot:
     def __str__(self):
         return self.get_name() + " Strength: " + str(self.strength)
 
-    def mate_with(self, bot2):
+    def mate_with(self, bot2, name = "unnamed"):
         """
         Creates a new bot (bot3), crossover from bot1 and bot2. The new bot takes exactly 
         (and for each layer) half his neurons from 'bot1' and the other half from 'bot2' :
         only the distribution on each layer is random.
-        :param bot1:
         :param bot2:
         :return: a new bot with, on each layer, as many neurons from bot 1 as bot 2.
         """
+        global generation
 
         list_layer = []         #layers of the neural net of bot3
 
@@ -80,7 +80,7 @@ class Bot:
             list_layer.append(Layer(list_neurons))
 
         brain = Neural_network(list_layer)
-        bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT))
+        bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT), name)
 
         return bot3
 
