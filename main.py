@@ -9,7 +9,7 @@ from gem import *
 
 def selection(list_of_bots, nbr_to_choose):
     """
-    Sorts 'list_of_bots' and return a list with the 'nbr_to_choose' best bots
+    Sorts 'list_of_bots' and returns a list with the 'nbr_to_choose' best bots.
     :param list_of_bots: list of bots from which to select
     :param nbr_to_choose: the number of bot to choose
     :return: the list of the 'nbr_to_choose' best bot
@@ -29,11 +29,10 @@ def get_mating_list(best, nbr_to_make):
     of length 'nbr_to_make'. Each item of the list is a tuple of two bots from 'best'
     to crossover. Each bot from 'best' mates at least 'nbr_to_make//len(best)' times.
     The number 'nbr_to_make//len_best' is the number of times you have to make
-    each bot mate in order to have a mating list of size 'nbr_to_make'
+    each bot mate in order to have a mating list of size 'nbr_to_make'.
     :param best: the bots to mate
     :return: the list of bots to crossover of length 'nbr_to_make'.
     """
-
     len_best = len(best);
 
     res = []
@@ -47,7 +46,8 @@ def get_mating_list(best, nbr_to_make):
 
 def bot_sort(list_of_bots):
     """
-    sort the list list_bot given in argument with strength decreasing
+    Sorts 'list_bot' with strength decreasing.
+    :param list_of_bots: list of bots to sort
     """
     for i in range(len(list_of_bots)-1):
         if list_of_bots[i].strength < list_of_bots[i+1].strength:
@@ -59,7 +59,7 @@ def bot_sort(list_of_bots):
 
 def generate_gem(list_gem):
     """
-    erase list_gem then generate NBR_GEMS Gems and puts them in list_gem
+    Erases 'list_gem', generates 'NBR_GEMS' Gems and puts them in 'list_gem'.
     """
     for gem in list_gem:
         gem.erase()
@@ -68,6 +68,10 @@ def generate_gem(list_gem):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
 def place_bots_in_line(list_of_bots):
+	"""
+	Changes the position of every robot in 'list_of_bots', so that they form
+	a line in the bottom of the board.
+	"""
     if len(list_of_bots) > WIDTH/2:
         raise ValueError("too many bots to do that\n")
 
@@ -83,10 +87,9 @@ def trigger_new_generation():
 
 def new_generation(list_bot, list_gem, list_dead_bot):
     """
-    Select the best from this generation
-    Erase the old bots
-    create the new bots
-    and generate the gems
+    Creates a new set of bots from the best ones of this generation and
+    resets the board for the bot of the next gen to play with. The mean strengh
+    of the best bots of the current generation is saved in the file 'FILE_RES'.
     """
     global turn
     global generation
@@ -139,10 +142,11 @@ def trigger_bring_to_life():
     bring_to_life(list_bot, list_dead_bot)
 
 def bring_to_life(list_bot, list_dead_bot):
-    """This function will bring every bot to life, and replace them on the side
-    it will not reset their strength ! The purpose of this function is to let
-    more time to bots to prove their value, before selecting them"""
-
+    """
+    This function will bring every bot to life, and replace them on the bottom side.
+    It will not reset their strength ! The purpose of this function is to let
+    more time to bots to prove their value before selecting them.
+    """
     list_bot += list_dead_bot
     list_dead_bot.clear()
     place_bots_in_line(list_bot)
@@ -154,6 +158,7 @@ def trigger_more_gems():
     more_gems(list_gem)
 
 def more_gems(list_gem):
+	"""Adds 100 gems randomly on the field"""
     for i in range(100):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
@@ -162,6 +167,7 @@ def trigger_reset_gems():
     generate_gem(list_gem)
 
 def trigger_another_chance():
+	"""Same as 'bring_to_life()', but reset gems too."""
     global list_gem
     global list_bot
     global list_dead_bot
@@ -181,9 +187,9 @@ def trigger_game():
 
 def game(list_bot, list_gem, list_dead_bot):
     """
-    update the bots in list_bot
-    make them eat
-    and relaunch the function game after a little time
+    Updates the bots in 'list_bot'.
+    Calls 'eat()' for each of them.
+    And relaunches 'game()' after a little time.
     """
     global turn
     global auto_gen
