@@ -194,13 +194,18 @@ def trigger_game():
     global list_bot
     global list_gem
     global list_dead_bot
-    game(list_bot, list_gem, list_dead_bot)
+    global entry_speed
 
-def game(list_bot, list_gem, list_dead_bot):
+    game(list_bot, list_gem, list_dead_bot, entry_speed)
+
+def game(list_bot, list_gem, list_dead_bot, entry_speed):
     """
     Updates the bots in 'list_bot'.
     Calls 'eat()' for each of them.
     And relaunches 'game()' after a little time.
+
+    :param entry_speed: tkinter object of type Entry, the field that gives the
+                         speed of time.
     """
     global turn
     global auto_gen
@@ -213,7 +218,17 @@ def game(list_bot, list_gem, list_dead_bot):
 
     if turn > NB_TURN_GENERATION and auto_gen == 1:
         trigger_new_generation()
-    root.after(1000 // FPS, trigger_game)
+
+    speed = entry_speed.get()
+
+    if speed == "":
+        speed = "1"
+
+    speed = int(speed)
+    if speed < 0:
+        speed = 1
+
+    root.after(1000 // speed, trigger_game)
 
 # Creation of the graphic interface
 frame_left = tk.Frame(root)
@@ -237,6 +252,15 @@ generation_text = tk.Label(frame_left, text="Generation : 1")
 generation_text.pack()
 auto_pass_generation = tk.Checkbutton(frame_right, text="disable automatic generations", command=toggle_auto_gen)
 auto_pass_generation.pack()
+# slider_speed = tk.Scale(root, label="speed", from_=1, to=600, orient=tk.HORIZONTAL)
+# slider_speed.pack()
+# slider_speed.set(30)
+speed_text = tk.Label(text="Speed")
+speed_text.pack()
+entry_speed = tk.Entry(root)
+entry_speed.pack()
+entry_speed.delete(0, tk.END)
+entry_speed.insert(0, str(FPS))
 
 if __name__ == '__main__':
     generation = 1
@@ -252,6 +276,6 @@ if __name__ == '__main__':
         else:
             list_bot.append(Bot(Neural_network.init_random([4], 4), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
     place_bots_in_line(list_bot)
-    game(list_bot, list_gem, list_dead_bot)
+    game(list_bot, list_gem, list_dead_bot, entry_speed)
     root.mainloop()
     FILE_RES.close()
