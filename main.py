@@ -9,7 +9,7 @@ from gem import *
 # Genetic Algorithm
 def selection(list_of_bots, nbr_to_choose):
     """
-    Sorts 'list_of_bots' and return a list with the 'nbr_to_choose' best bots
+    Sorts 'list_of_bots' and returns a list with the 'nbr_to_choose' best bots.
     :param list_of_bots: list of bots from which to select
     :param nbr_to_choose: the number of bot to choose
     :return: the list of the 'nbr_to_choose' best bot
@@ -23,55 +23,31 @@ def selection(list_of_bots, nbr_to_choose):
     return deepcopy(list_of_bots[:nbr_to_choose])
 
 
-def mate(best):
+def get_mating_list(best, nbr_to_make):
     """
-    Mate the best bot with each other
-    :param best: the bots to mate of len l
-    :return: the list of the bots to crossover of len l*NBR_BOT//NB_SELECT_BOT
+    Given a list of bots, this function creates a random mating list
+    of length 'nbr_to_make'. Each item of the list is a tuple of two bots from 'best'
+    to crossover. Each bot from 'best' mates at least 'nbr_to_make//len(best)' times.
+    The number 'nbr_to_make//len_best' is the number of times you have to make
+    each bot mate in order to have a mating list of size 'nbr_to_make'.
+    :param best: the bots to mate
+    :return: the list of bots to crossover of length 'nbr_to_make'.
     """
+    len_best = len(best)
     res = []
-    for k in range(len(best)):
-        for i in range(NBR_BOT//NB_SELECT_BOT):
-            temp = randrange(0, len(best))
+    for k in range(len_best):
+        for i in range(nbr_to_make//len_best):
+            temp = randrange(0, len_best)
             while temp == k:
-                temp = randrange(0, len(best))
+                temp = randrange(0, len_best)
             res.append((best[k], best[temp]))
     return res
 
 
-def crossover(bot1, bot2):
-    """
-    Create a new bot with the crossover
-    :param bot1:
-    :param bot2:
-    :return: a new bot with as many neurons from bot 1 than bot 2
-    """
-    list_layer = []
-    for i_layer in range(len(bot1.brain)):
-        list_neurons =[]
-        nbr_neuron_from_bot1 = len(bot1.brain[i_layer])//2
-        # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
-        index_of_neurons_from_bot_1 = []
-        for i in range(nbr_neuron_from_bot1):
-            index = randrange(len(bot1.brain[i_layer]))
-            while index in index_of_neurons_from_bot_1:    # We don't want the same index twice
-                index = randrange(len(bot1.brain[i_layer]))
-            index_of_neurons_from_bot_1.append(index)
-        for i in range(len(bot1.brain[i_layer])):
-            if i in index_of_neurons_from_bot_1:
-                list_neurons.append(deepcopy(bot1.brain[i_layer][i]))
-            else:
-                list_neurons.append(deepcopy(bot2.brain[i_layer][i]))
-        layer = Layer(list_neurons)
-        list_layer.append(layer)
-    brain = Neural_network(list_layer)
-    bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT))
-    return bot3
-
-
 def bot_sort(list_of_bots):
     """
-    sort the list list_bot given in argument with strength decreasing
+    Sorts 'list_bot' with strength decreasing.
+    :param list_of_bots: list of bots to sort
     """
     for i in range(len(list_of_bots)-1):
         if list_of_bots[i].strength < list_of_bots[i+1].strength:
@@ -83,10 +59,9 @@ def bot_sort(list_of_bots):
 
 
 # Generate a new level
-
 def generate_gem(list_gem):
     """
-    erase list_gem then generate NBR_GEMS Gems and puts them in list_gem
+    Erases 'list_gem', generates 'NBR_GEMS' Gems and puts them in 'list_gem'.
     """
     for gem in list_gem:
         gem.erase()
@@ -96,6 +71,10 @@ def generate_gem(list_gem):
 
 
 def place_bots_in_line(list_of_bots):
+    """
+    Changes the position of every robot in 'list_of_bots', so that they form
+    a line in the bottom of the board.
+    """
     if len(list_of_bots) > WIDTH/2:
         raise ValueError("too many bots to do that\n")
 
@@ -113,23 +92,15 @@ def trigger_new_generation():
 
 def new_generation(list_bot, list_gem, list_dead_bot):
     """
-    Select the best from this generation
-    Erase the old bots
-    create the new bots
-    and generate the gems
+    Creates a new set of bots from the best ones of this generation and
+    resets the board for the bot of the next gen to play with. The mean strengh
+    of the best bots of the current generation is saved in the file 'FILE_RES'.
     """
     global turn
     global generation
-    # best = selection(7)
 
-    # for bot in list_bot:
-    #     bot.erase()
-    # list_bot.clear()
-
-    # for bot in mate(best):
-    #     list_bot.append(bot)
-    # list_dead_bot.clear()
-    # generate_gem(list_gem)
+    nbr_alive = len(list_bot)
+    nbr_gems_remaining = len(list_gem)
 
     #gather every bot
     list_bot += list_dead_bot
@@ -150,21 +121,29 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     sum = 0
     for bot in best:
         sum += bot.strength
-    print("mean: " + str(sum/NB_SELECT_BOT))
-    FILE_RES.write(str(sum/NB_SELECT_BOT)+"\n")
+
+    mean = sum/NB_SELECT_BOT
+    alive_percent = (nbr_alive/NBR_BOT)*100 
+    gems_eaten_percent = ((NBR_GEMS-nbr_gems_remaining)/NBR_GEMS)*100
+    print("Mean strength: " + str(mean))
+    print("Remaining alive bots: " + str(alive_percent) + "%")
+    print("Gems eaten: " + str(gems_eaten_percent) + "%")
+    FILE_RES.write(str(mean) + " " +
+                   str(alive_percent) + " " +
+                   str(gems_eaten_percent) + "\n")
 
     #clear the list_bot
     list_bot.clear()
 
     #mate the best bots
-    mating_list = mate(best)
+    mating_list = get_mating_list(best, NBR_BOT)
 
     #crossover the bots
-    for (b1, b2) in mating_list:
-        list_bot.append(crossover(b1, b2))
-
     generation += 1
-    generation_text.configure(text="Generation : "+str(generation))
+    for i, (b1, b2) in enumerate(mating_list):
+        list_bot.append(b1.mate_with(b2, str(generation) + "th_gen_" + str(i)))
+
+    generation_text.configure(text="Generation : " + str(generation))
     generation_text.update()
     turn = 0
 
@@ -181,10 +160,11 @@ def trigger_bring_to_life():
 
 
 def bring_to_life(list_bot, list_dead_bot):
-    """This function will bring every bot to life, and replace them on the side
-    it will not reset their strength ! The purpose of this function is to let
-    more time to bots to prove their value, before selecting them"""
-
+    """
+    This function will bring every bot to life, and replace them on the bottom side.
+    It will not reset their strength ! The purpose of this function is to let
+    more time to bots to prove their value before selecting them.
+    """
     list_bot += list_dead_bot
     list_dead_bot.clear()
     place_bots_in_line(list_bot)
@@ -198,6 +178,7 @@ def trigger_more_gems():
 
 
 def more_gems(list_gem):
+    """Adds 100 gems randomly on the field"""
     for i in range(100):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
@@ -208,6 +189,7 @@ def trigger_reset_gems():
 
 
 def trigger_another_chance():
+    """Same as 'bring_to_life()', but reset gems too."""
     global list_gem
     global list_bot
     global list_dead_bot
@@ -215,29 +197,37 @@ def trigger_another_chance():
     bring_to_life(list_bot, list_dead_bot)
 
 
+def toggle_auto_gen():
+    global auto_gen
+    auto_gen = not auto_gen
+
+
 # Main
-def trigger_main():
+def trigger_game():
     global list_bot
     global list_gem
     global list_dead_bot
-    main(list_bot, list_gem, list_dead_bot)
+    game(list_bot, list_gem, list_dead_bot)
 
 
-def main(list_bot, list_gem, list_dead_bot):
+def game(list_bot, list_gem, list_dead_bot):
     """
-    update the bots in list_bot
-    make them eat
-    and relaunch the function main after a little time
+    Updates the bots in 'list_bot'.
+    Calls 'eat()' for each of them.
+    And relaunches 'game()' after a little time.
     """
     global turn
+    global auto_gen
+
     turn += 1
     for bot in list_bot:
         bot.update(list_bot, list_gem)
     for bot in list_bot:
         bot.eat(list_bot, list_gem, list_dead_bot)
-    if turn > NB_TURN_GENERATION:
+
+    if turn > NB_TURN_GENERATION and auto_gen == 1:
         trigger_new_generation()
-    root.after(1000 // FPS, trigger_main)
+    root.after(1000 // FPS, trigger_game)
 
 # Creation of the graphic interface
 frame_left = tk.Frame(root)
@@ -259,17 +249,20 @@ button_another_chance = tk.Button(frame_left, text="another chance", command=tri
 button_another_chance.pack()
 generation_text = tk.Label(frame_left, text="Generation : 1")
 generation_text.pack()
+auto_pass_generation = tk.Checkbutton(frame_right, text="disable automatic generations", command=toggle_auto_gen)
+auto_pass_generation.pack()
 
 if __name__ == '__main__':
     generation = 1
     turn = 0
+    auto_gen = 1
     list_bot = []
     list_dead_bot = []
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot.quick_init())
+        list_bot.append(Bot.quick_init(name=str(generation) + "th_gen_" + str(i)))
     place_bots_in_line(list_bot)
-    main(list_bot, list_gem, list_dead_bot)
+    game(list_bot, list_gem, list_dead_bot)
     root.mainloop()
     FILE_RES.close()
