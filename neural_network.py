@@ -6,50 +6,53 @@ class Neural_network:
     A neural network takes a given number of inputs and yields the same number
     of outputs as the number of neurons in the last layer"""
 
-    def __init__(self, arg1, arg2 = None):
+    def __init__(self, list_layers):
         """
-        method 1 : my_net = neural_network(list_sizes, nbr_input)
-            inits a neural network that has 'len(list_sizes)' layers, their respective
-            size (number of neurons in the given layer) should be given by list_sizes,
-            where list_sizes[n] is the size of the nth layer
-        method 2: my_net = neural_network(list_layers)
-            inits a neural network that has list_layers for layers. This function
-            also check the validity of such a network (it checks if every layer takes
-            as much input as there is neurons in the previous layer)
+        usage : my_net = neural_network(list_layers)
+        Inits a neural network that has list_layers for layers. This function
+        also check the validity of such a network (it checks if every layer takes
+        as much input as there is neurons in the previous layer).
+        :param list_layers: List of layers from which to create the neural network.
+                            This list is deepcopy'ed.
         """
 
-        if  isinstance(arg1, list) and isinstance(arg2, int):
-            #method 1
-            list_sizes = arg1
-            nbr_input = arg2
+        #check if list_layers is a list of layers
+        for a in list_layers:
+            if not isinstance(a, Layer):
+                raise TypeError("In 'Neural_network.__init__()' : The list you provided does not only contain Layers. It should.")
 
-            self.layers = []
-            self.nbr_layer = len(list_sizes)
-            self.nbr_input = nbr_input
+        #check validity of layers
+        cur_nbr_input = list_layers[0].nbr_input
+        for layer in list_layers:
+            if layer.nbr_input != cur_nbr_input:
+                raise ValueError("In 'Neural_network.__init__() : the layers provided do not form a valid network\n")
+            cur_nbr_input = layer.nbr_neuron
 
-            cur_nbr_input = nbr_input   #needed to make every layer take the same number
-                                        #of input that the previous layer had neurons
-            for i in range(self.nbr_layer):
-                self.layers.append(Layer(list_sizes[i], cur_nbr_input))
-                cur_nbr_input = list_sizes[i]
-        elif isinstance(arg1, list) and arg2 == None:
-            #check if arg1 is a list of layers
-            for a in arg1:
-                if not isinstance(a, Layer):
-                    raise TypeError("In 'Neural_network.__init__()' : The list you provided does not only contain Layers. It should.")
+        #actual function
+        self.layers = deepcopy(list_layers)
+        self.nbr_layer = len(self.layers)
+        self.nbr_input = list_layers[0].nbr_input
 
-            #method 2
-            self.layers = deepcopy(arg1)
-            self.nbr_layer = len(self.layers)
-            self.nbr_input = self.layers[0].nbr_input
+    @staticmethod
+    def init_random(list_sizes, nbr_input):
+        """
+        Usage : my_net = neural_network(list_sizes, nbr_input)
+        Inits a neural network that has 'len(list_sizes)' layers, their respective
+        size (number of neurons in the given layer) should be given by list_sizes,
+        where list_sizes[n] is the size of the nth layer
+        :return: a bot created as described.
+        """
 
-            cur_nbr_input = self.nbr_input
-            for layer in self.layers:
-                if layer.nbr_input != cur_nbr_input:
-                    raise ValueError("In 'Neural_network.__init__() : the layers provided do not form a valid network\n")
-                cur_nbr_input = layer.nbr_neuron
-        else:
-            raise TypeError("In 'Neural_network.__init__()': wrong arguments.\n")
+        list_layers = []
+        nbr_layer = len(list_sizes)
+
+        cur_nbr_input = nbr_input   #needed to make every layer take the same number
+                                    #of input that the previous layer had neurons
+        for i in range(nbr_layer):
+            list_layers.append(Layer(list_sizes[i], cur_nbr_input))
+            cur_nbr_input = list_sizes[i]
+
+        return Neural_network(list_layers)
 
     def get_output(self, inputs):
         """

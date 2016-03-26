@@ -237,7 +237,7 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot(8, Neural_network([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+        list_bot.append(Bot(8, Neural_network.init_random([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
     place_bots_in_line(list_bot)
     game(list_bot, list_gem, list_dead_bot)
     root.mainloop()
