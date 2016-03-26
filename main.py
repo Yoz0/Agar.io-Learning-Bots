@@ -23,13 +23,13 @@ def selection(list_of_bots, nbr_to_choose):
     return deepcopy(list_of_bots[:nbr_to_choose])
 
 
-def mating_list(best, nbr_to_make):
+def get_mating_list(best, nbr_to_make):
     """
     Given a list of bots, this function creates a random mating list
     of length 'nbr_to_make'. Each item of the list is a tuple of two bots from 'best'
     to crossover. Each bot from 'best' mates at least 'nbr_to_make//len(best)' times.
     The number 'nbr_to_make//len_best' is the number of times you have to make
-    each bot mate in order to have a mating list of size 'nbr_to_make' 
+    each bot mate in order to have a mating list of size 'nbr_to_make'
     :param best: the bots to mate
     :return: the list of bots to crossover of length 'nbr_to_make'.
     """
@@ -37,44 +37,13 @@ def mating_list(best, nbr_to_make):
     len_best = len(best);
 
     res = []
-    for k in range(len_best):                  
-        for i in range(nbr_to_make//len_best):  
-            temp = randrange(0, len_best)          
+    for k in range(len_best):
+        for i in range(nbr_to_make//len_best):
+            temp = randrange(0, len_best)
             while temp == k:
                 temp = randrange(0, len_best)
             res.append((best[k], best[temp]))
     return res
-
-
-def crossover(bot1, bot2):
-    """
-    Create a new bot with the crossover
-    :param bot1:
-    :param bot2:
-    :return: a new bot with as many neurons from bot 1 than bot 2
-    """
-    list_layer = []
-    for i_layer in range(len(bot1.brain)):
-        list_neurons =[]
-        nbr_neuron_from_bot1 = len(bot1.brain[i_layer])//2
-        # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
-        index_of_neurons_from_bot_1 = []
-        for i in range(nbr_neuron_from_bot1):
-            index = randrange(len(bot1.brain[i_layer]))
-            while index in index_of_neurons_from_bot_1:    # We don't want the same index twice
-                index = randrange(len(bot1.brain[i_layer]))
-            index_of_neurons_from_bot_1.append(index)
-        for i in range(len(bot1.brain[i_layer])):
-            if i in index_of_neurons_from_bot_1:
-                list_neurons.append(deepcopy(bot1.brain[i_layer][i]))
-            else:
-                list_neurons.append(deepcopy(bot2.brain[i_layer][i]))
-        layer = Layer(list_neurons)
-        list_layer.append(layer)
-    brain = Neural_network(list_layer)
-    bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT))
-    return bot3
-
 
 def bot_sort(list_of_bots):
     """
@@ -165,11 +134,11 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     list_bot.clear()
 
     #mate the best bots
-    mating_list = mating_list(best, NBR_BOT)
+    mating_list = get_mating_list(best, NBR_BOT)
 
     #crossover the bots
     for (b1, b2) in mating_list:
-        list_bot.append(crossover(b1, b2))
+        list_bot.append(b1.mate_with(b2))
 
     generation += 1
     generation_text.configure(text="Generation : "+str(generation))
