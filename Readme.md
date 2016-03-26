@@ -1,8 +1,8 @@
 Agar.io Learning Bots
 =====================
-This is a python project to test combination of neural network and genetic algorithm in order to do create AI.
+This is a python project to test combination of neural network and genetic algorithm in order to create Awe.
 The bots have to collect gems and eat each other like in the game <agar.io>,
-but I changed some rules to facilitate the neural network approach. The bots move on a grid, they can eat gems to become
+but we changed some rules to facilitate the neural network approach. The bots move on a grid, they can eat gems to become
  stronger, they can eat other weaker bot to become even more stronger.
 
 Neural Network
@@ -33,4 +33,8 @@ and [mutation](https://en.wikipedia.org/wiki/Mutation_%28genetic_algorithm%29).
 
 Technical stuff
 ---------------
-I use python 3.5 and Tkinter
+We use python 3.5 and Tkinter. Use `python3 main.py` to run.
+
+Developers
+----------
+This is a personal project by Clément Saintier and Stéphane Kastenbaum.
