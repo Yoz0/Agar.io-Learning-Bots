@@ -23,18 +23,25 @@ def selection(list_of_bots, nbr_to_choose):
     return deepcopy(list_of_bots[:nbr_to_choose])
 
 
-def mate(best):
+def mating_list(best, nbr_to_make):
     """
-    Mate the best bot with each other
-    :param best: the bots to mate of len l
-    :return: the list of the bots to crossover of len l*NBR_BOT//NB_SELECT_BOT
+    Given a list of bots, this function creates a random mating list
+    of length 'nbr_to_make'. Each item of the list is a tuple of two bots from 'best'
+    to crossover. Each bot from 'best' mates at least 'nbr_to_make//len(best)' times.
+    The number 'nbr_to_make//len_best' is the number of times you have to make
+    each bot mate in order to have a mating list of size 'nbr_to_make' 
+    :param best: the bots to mate
+    :return: the list of bots to crossover of length 'nbr_to_make'.
     """
+
+    len_best = len(best);
+
     res = []
-    for k in range(len(best)):
-        for i in range(NBR_BOT//NB_SELECT_BOT):
-            temp = randrange(0, len(best))
+    for k in range(len_best):                  
+        for i in range(nbr_to_make//len_best):  
+            temp = randrange(0, len_best)          
             while temp == k:
-                temp = randrange(0, len(best))
+                temp = randrange(0, len_best)
             res.append((best[k], best[temp]))
     return res
 
@@ -131,16 +138,6 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     """
     global turn
     global generation
-    # best = selection(7)
-
-    # for bot in list_bot:
-    #     bot.erase()
-    # list_bot.clear()
-
-    # for bot in mate(best):
-    #     list_bot.append(bot)
-    # list_dead_bot.clear()
-    # generate_gem(list_gem)
 
     #gather every bot
     list_bot += list_dead_bot
@@ -168,7 +165,7 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     list_bot.clear()
 
     #mate the best bots
-    mating_list = mate(best)
+    mating_list = mating_list(best, NBR_BOT)
 
     #crossover the bots
     for (b1, b2) in mating_list:
