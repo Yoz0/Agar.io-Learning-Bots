@@ -11,12 +11,9 @@ class Bot:
     This is a bot.
     """
 
-    def __init__(self, nbr_input, brain, i, j, name = "unnamed"):
+    def __init__(self, brain, i, j, name = "unnamed"):
         """
-        inits a bot whose brain is made of a neural network. The neural network
-        structure is given by 'list_sizes' where 'list_sizes[n]' is the size of the
-        nth layer of the network, and 'nbr_input' is the number of input that each
-        neuron of the first layer take.
+        inits a bot whose brain is made of a neural network.
         """
 
         self.name = name
@@ -24,7 +21,7 @@ class Bot:
         self.i = i
         self.j = j
         self.strength = 0
-        self.list_input = [0 for i in range(nbr_input)]
+        self.list_input = [0 for i in range(brain.nbr_input)]
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
         self.sprite = None
 
@@ -36,7 +33,7 @@ class Bot:
         res += " position: i = " + str(self.i) + " ; j = " + str(self.j)
         res += "Strength: " + str(self.strength)
         res += "\n Neurons:\n"
-        for i, layer in ennumerate(brain):
+        for i, layer in enumerate(self.brain):
             for neuron in layer:
                 res += "Layer " + i + " - "
                 res += str(neuron)
@@ -47,20 +44,21 @@ class Bot:
     def __str__(self):
         return self.get_name() + " Strength: " + str(self.strength)
 
-    def mate_with(self, bot2, name = "unnamed"):
+    def mate_with(self, bot2, name="unnamed"):
         """
         Creates a new bot (bot3), crossover from bot1 and bot2. The new bot takes exactly 
         (and for each layer) half his neurons from 'bot1' and the other half from 'bot2' :
         only the distribution on each layer is random.
-        :param bot2:
+        :param name: name of the newly created bot
+        :param bot2: other bot to mate with
         :return: a new bot with, on each layer, as many neurons from bot 1 as bot 2.
         """
         global generation
 
-        list_layer = []         #layers of the neural net of bot3
+        list_layer = []         # layers of the neural net of bot3
 
         for i_layer, layer in enumerate(self.brain):
-            list_neurons = []   #neurons in the current layer of the neural net of bot3
+            list_neurons = []   # neurons in the current layer of the neural net of bot3
             nbr_neuron_from_bot1 = len(layer)//2
 
             # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
@@ -80,12 +78,12 @@ class Bot:
             list_layer.append(Layer(list_neurons))
 
         brain = Neural_network(list_layer)
-        bot3 = Bot(brain.nbr_input, brain, randrange(WIDTH), randrange(HEIGHT), name)
+        bot3 = Bot(brain, randrange(WIDTH), randrange(HEIGHT), name)
 
         return bot3
 
     def reset(self):
-        """keeps the brain as it is, but resets the strengh and the position"""
+        """keeps the brain as it is, but resets the strength and the position"""
         self.i = randrange(WIDTH)
         self.j = randrange(HEIGHT)
         self.strength = 0
@@ -93,7 +91,7 @@ class Bot:
     def display(self):
         """
         Display the bot at the position i;j on the canvas.
-        Canvas should be a global ariable.
+        Canvas should be a global variable.
         """
         canvas.delete(self.sprite)
         self.sprite = canvas.create_oval(self.i * SQUARE_SIZE, self.j * SQUARE_SIZE,
@@ -122,7 +120,8 @@ class Bot:
         """
         Check up, down, left and right to see if there is any foe or gem and update self.list_input accordingly
         """
-        self.list_input = [0 for k in range(8)]
+        self.list_input = [0 for k in range(self.brain.nbr_input)]
+
         if Gem.detect_gem(self.i, self.j - 1, list_gem) is not None:
             self.list_input[0] = 1
         if Gem.detect_gem(self.i, self.j + 1, list_gem) is not None:
@@ -131,30 +130,32 @@ class Bot:
             self.list_input[2] = 1
         if Gem.detect_gem(self.i + 1, self.j, list_gem) is not None:
             self.list_input[3] = 1
-        foe = self.detect_foe(self.i, self.j - 1, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[4] = 1
-            else:
-                self.list_input[4] = -1
-        foe = self.detect_foe(self.i, self.j + 1, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[5] = 1
-            else:
-                self.list_input[5] = -1
-        foe = self.detect_foe(self.i - 1, self.j, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[6] = 1
-            else:
-                self.list_input[6] = -1
-        foe = self.detect_foe(self.i + 1, self.j, list_bot)
-        if foe is not None:
-            if foe.strength < self.strength:
-                self.list_input[7] = 1
-            else:
-                self.list_input[7] = -1
+
+        if not NO_MURDER:
+            foe = self.detect_foe(self.i, self.j - 1, list_bot)
+            if foe is not None:
+                if foe.strength < self.strength:
+                    self.list_input[4] = 1
+                else:
+                    self.list_input[4] = -1
+            foe = self.detect_foe(self.i, self.j + 1, list_bot)
+            if foe is not None:
+                if foe.strength < self.strength:
+                    self.list_input[5] = 1
+                else:
+                    self.list_input[5] = -1
+            foe = self.detect_foe(self.i - 1, self.j, list_bot)
+            if foe is not None:
+                if foe.strength < self.strength:
+                    self.list_input[6] = 1
+                else:
+                    self.list_input[6] = -1
+            foe = self.detect_foe(self.i + 1, self.j, list_bot)
+            if foe is not None:
+                if foe.strength < self.strength:
+                    self.list_input[7] = 1
+                else:
+                    self.list_input[7] = -1
 
     def detect_foe(self, i, j, list_bot):
         """
@@ -180,7 +181,8 @@ class Bot:
 
     def move(self):
         """
-        Check which out put is the "most activated" (which is higher) and move in that direction
+        Checks which output is the "most activated" (which is higher) and move
+        in that direction.
         :return:
         """
 
@@ -217,12 +219,13 @@ class Bot:
             gem.erase()
             list_gem.remove(gem)
 
-        foe = self.detect_foe(self.i, self.j, list_bot)
-        if foe is not None:
-            if(foe.strength <= self.strength):
-                for i in range(5):
-                    if self.strength+1 <= MAX_STRENGTH:
-                        self.strength += 1
-                foe.erase()
-                list_dead_bot.append(foe)
-                list_bot.remove(foe)
+        if not NO_MURDER:
+            foe = self.detect_foe(self.i, self.j, list_bot)
+            if foe is not None:
+                if(foe.strength <= self.strength):
+                    for i in range(5):
+                        if self.strength+1 <= MAX_STRENGTH:
+                            self.strength += 1
+                    foe.erase()
+                    list_dead_bot.append(foe)
+                    list_bot.remove(foe)

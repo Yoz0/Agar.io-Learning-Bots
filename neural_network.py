@@ -42,6 +42,13 @@ class Neural_network:
         where list_sizes[n] is the size of the nth layer
         :return: a bot created as described.
         """
+        if not isinstance(list_sizes, list):
+            raise TypeError("In 'Neural_network.init_random' : argument 'list_sizes' has to be a list.")
+        for a in list_sizes:
+            if not isinstance(a, int):
+                raise TypeError("In 'Neural_network.init_random' : list_sizes should only contain integers.")
+        if not isinstance(nbr_input, int):
+            raise TypeError("In 'Neural_network.init_random' : argument 'nbr_input' should be an integer")
 
         list_layers = []
         nbr_layer = len(list_sizes)
@@ -60,9 +67,11 @@ class Neural_network:
         from one layer to the following. returns the output from the last layer 
         """
 
-        #protection
+        if not isinstance(inputs, list):
+            raise TypeError("In 'Neural_network.get_output()' : argument 'inputs' has to be a list.")
+
         if len(inputs) != self.nbr_input:
-            raise TypeError("In 'Neural_network.get_output()': wrong number of input. Given " + str(len(inputs)) + " needed " + str(len(self.nbr_input)) + ".\n")
+            raise TypeError("In 'Neural_network.get_output()': wrong number of input. Given " + str(len(inputs)) + " needed " + str(self.nbr_input) + ".\n")
 
         cur_input = []        #will hold the successive result of each layer
         cur_input = inputs

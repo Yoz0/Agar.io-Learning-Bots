@@ -68,10 +68,10 @@ def generate_gem(list_gem):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
 def place_bots_in_line(list_of_bots):
-	"""
-	Changes the position of every robot in 'list_of_bots', so that they form
-	a line in the bottom of the board.
-	"""
+    """
+    Changes the position of every robot in 'list_of_bots', so that they form
+    a line in the bottom of the board.
+    """
     if len(list_of_bots) > WIDTH/2:
         raise ValueError("too many bots to do that\n")
 
@@ -94,6 +94,9 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     global turn
     global generation
 
+    nbr_alive = len(list_bot)
+    nbr_gems_remaining = len(list_gem)
+
     #gather every bot
     list_bot += list_dead_bot
 
@@ -113,8 +116,16 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     sum = 0
     for bot in best:
         sum += bot.strength
-    print("mean: " + str(sum/NB_SELECT_BOT))
-    FILE_RES.write(str(sum/NB_SELECT_BOT)+"\n")
+
+    mean = sum/NB_SELECT_BOT
+    alive_percent = (nbr_alive/NBR_BOT)*100 
+    gems_eaten_percent = ((NBR_GEMS-nbr_gems_remaining)/NBR_GEMS)*100
+    print("Mean strength: " + str(mean))
+    print("Remaining alive bots: " + str(alive_percent) + "%")
+    print("Gems eaten: " + str(gems_eaten_percent) + "%")
+    FILE_RES.write(str(mean) + " " +
+                   str(alive_percent) + " " +
+                   str(gems_eaten_percent) + "\n")
 
     #clear the list_bot
     list_bot.clear()
@@ -158,7 +169,7 @@ def trigger_more_gems():
     more_gems(list_gem)
 
 def more_gems(list_gem):
-	"""Adds 100 gems randomly on the field"""
+    """Adds 100 gems randomly on the field"""
     for i in range(100):
         list_gem.append(Gem(randrange(WIDTH), randrange(HEIGHT)))
 
@@ -167,7 +178,7 @@ def trigger_reset_gems():
     generate_gem(list_gem)
 
 def trigger_another_chance():
-	"""Same as 'bring_to_life()', but reset gems too."""
+    """Same as 'bring_to_life()', but reset gems too."""
     global list_gem
     global list_bot
     global list_dead_bot
@@ -236,7 +247,10 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot(8, Neural_network.init_random([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+        if not NO_MURDER:
+            list_bot.append(Bot(Neural_network.init_random([4], 8), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
+        else:
+            list_bot.append(Bot(Neural_network.init_random([4], 4), randrange(WIDTH), randrange(HEIGHT), "1st_gen_" + str(i)))
     place_bots_in_line(list_bot)
     game(list_bot, list_gem, list_dead_bot)
     root.mainloop()
