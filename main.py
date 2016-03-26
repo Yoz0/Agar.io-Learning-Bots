@@ -57,23 +57,6 @@ def bot_sort(list_of_bots):
                 list_of_bots[temp], list_of_bots[temp - 1] = list_of_bots[temp - 1], list_of_bots[temp]
                 temp -= 1
 
-
-# Generate a new level
-def list_neuron_random(nbr_input, list_nbr_neurons):
-    """
-    Create a list of two list of neurons
-    :param nbr_input: the number of inputs for the neuron on the first layer
-    :param list_nbr_neurons: the list of with the number of neuron we want in the layer i in list_nbr_neurons[i]
-    :return: the list of list of neurons
-    """
-    res = [[] for i in range(len(list_nbr_neurons))]
-    for i_layer in range(len(res)):
-        for i_neuron in range(list_nbr_neurons[i_layer]):
-            res[i_layer].append(Neuron(nbr_input))
-        nbr_input = len(res[i_layer])   # Now the nbr_input is the number of neurons in the previous layer
-    return res
-
-
 def generate_gem(list_gem):
     """
     erase list_gem then generate NBR_GEMS Gems and puts them in list_gem
