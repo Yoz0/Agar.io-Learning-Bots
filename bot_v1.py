@@ -31,37 +31,16 @@ class Bot_v1(Bot):
 
     def mate_with(self, bot2, name="unnamed"):
         """
-        Creates a new bot (bot3), crossover from bot1 and bot2. The new bot takes exactly 
+        Creates a new bot (bot3), crossover from bot1 and bot2. The new bot takes exactly
         (and for each layer) half his neurons from 'bot1' and the other half from 'bot2' :
         only the distribution on each layer is random.
         :param name: name of the newly created bot
         :param bot2: other bot to mate with
-        :return: a new bot with, on each layer, as many neurons from bot 1 as bot 2.
+        :return: a new bot with, on each layer of his neural network, as many
+                 neurons from bot 1 as bot 2.
         """
-        list_layer = []         # layers of the neural net of bot3
 
-        for i_layer, layer in enumerate(self.brain):
-            list_neurons = []   # neurons in the current layer of the neural net of bot3
-            nbr_neuron_from_bot1 = len(layer)//2
-
-            # We have to select nbr_neuron_from_bot1 integers in the sequence range(len(layer))
-            index_of_neurons_from_bot_1 = []
-            for i in range(nbr_neuron_from_bot1):
-                index = randrange(len(layer))
-                while index in index_of_neurons_from_bot_1:    # We don't want the same index twice
-                    index = randrange(len(layer))
-                index_of_neurons_from_bot_1.append(index)
-
-            for i in range(len(layer)):
-                if i in index_of_neurons_from_bot_1:
-                    list_neurons.append(deepcopy(self.brain[i_layer][i]))
-                else:
-                    list_neurons.append(deepcopy(bot2.brain[i_layer][i]))
-
-            list_layer.append(Layer(list_neurons))
-
-        brain = Neural_network(list_layer)
-        bot3 = Bot_v1(brain, randrange(WIDTH), randrange(HEIGHT), name)
+        bot3 = Bot_v1(self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
 
         return bot3
 

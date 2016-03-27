@@ -50,7 +50,7 @@ class Neural_network:
                 raise TypeError("In 'Neural_network.init_random' : list_sizes should only contain integers.")
         if not isinstance(nbr_input, int):
             raise TypeError("In 'Neural_network.init_random' : argument 'nbr_input' should be an integer")
-        
+
         list_layers = []
         cur_nbr_input = nbr_input   # needed to make every layer take the same number
                                     # of input that the previous layer had neurons
@@ -65,7 +65,7 @@ class Neural_network:
     def get_output(self, inputs):
         """
         Feeds the first layer of the net with 'inputs', and then feeds every output
-        from one layer to the following. returns the output from the last layer 
+        from one layer to the following. returns the output from the last layer
         """
         if not isinstance(inputs, list):
             raise TypeError("In 'Neural_network.get_output()' : argument 'inputs' has to be a list.")
@@ -86,6 +86,62 @@ class Neural_network:
             res += "Layer " + str(i) + " :\n"
             res += str(layer)
         return res
+
+    def same_structure(self, brain2):
+        """
+        Returns 1 if brain2 has the same structure as self
+        Same structure implies same number of inputs, same number of layers,
+        same number of neurons on each layers
+        """
+        if not isinstance(brain2, Neural_network):
+            raise TypeError("In 'neural_network.crossover()': neural_network expected, " + str(type(brain2)) + " given.")
+        if(self.nbr_input != brain2.nbr_input):
+            return 0
+        if len(self.layers) != len(brain2.layers):
+            return 0
+
+        for i in range(len(self.layers)):
+            if len(self.layers[i]) != len(brain2.layers[i]):
+                return 0
+
+        return 1
+
+    def crossover(self, brain2):
+        """Creates a new neural_network, crossover from self and brain2. The new
+        network brain takes exactly (and for each layer) half his neurons from 'self'
+        and the other half from 'brain2' : only the distribution on each layer
+        is random.
+        :return: a new bot with, on each layer, as many neurons from bot 1 as bot 2.
+        """
+        #protection
+        if not isinstance(brain2, Neural_network):
+            raise TypeError("In 'neural_network.crossover()': neural_network expected, " + str(type(brain2)) + " given.")
+        if not self.same_structure(brain2):
+            raise ValueError("In 'neural_network.crossover()': the neural_network provided doesn't have the same structure as 'self'")
+
+        list_layer_brain3 = []         # layers of the neural net of brain3
+
+        for i_layer, layer in enumerate(self.layers):
+            list_neurons = []   # neurons that we will insert in brain3 as a layer
+            nbr_neuron_from_self = len(layer)//2
+
+            # We have to select nbr_neuron_from_self integers in the sequence range(len(layer))
+            index_of_neurons_from_self = []
+            for i in range(nbr_neuron_from_self):
+                index = randrange(len(layer))
+                while index in index_of_neurons_from_self:    # We don't want the same index twice
+                    index = randrange(len(layer))
+                index_of_neurons_from_self.append(index)
+
+            for i in range(len(layer)):
+                if i in index_of_neurons_from_self:
+                    list_neurons.append(deepcopy(self[i_layer][i]))
+                else:
+                    list_neurons.append(deepcopy(brain2[i_layer][i]))
+
+            list_layer_brain3.append(Layer(list_neurons))
+
+        return Neural_network(list_layer_brain3)
 
     #The following functions were created in order to meet python's protocol for
     #sequences. (protocol = interface in python)
