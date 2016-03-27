@@ -2,7 +2,7 @@ from random import random, randrange
 from copy import *
 from config import *
 from neuron import *
-from bot import *
+from bot_v1 import *
 from gem import *
 
 
@@ -56,7 +56,6 @@ def bot_sort(list_of_bots):
             while temp > 0 and list_of_bots[temp].strength > list_of_bots[temp-1].strength:
                 list_of_bots[temp], list_of_bots[temp - 1] = list_of_bots[temp - 1], list_of_bots[temp]
                 temp -= 1
-
 
 # Generate a new level
 def generate_gem(list_gem):
@@ -283,7 +282,7 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot.quick_init(name=str(generation) + "th_gen_" + str(i)))
+        list_bot.append(Bot_v1.quick_init(name=str(generation) + "th_gen_" + str(i)))
     place_bots_in_line(list_bot)
     game(list_bot, list_gem, list_dead_bot, entry_speed)
     root.mainloop()

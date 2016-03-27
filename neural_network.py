@@ -32,6 +32,7 @@ class Neural_network:
         self.layers = deepcopy(list_layers)
         self.nbr_layer = len(self.layers)
         self.nbr_input = list_layers[0].nbr_input
+        self.nbr_output = len(list_layers[-1])  # list[-1] -> last element of list
 
     @staticmethod
     def random_init(list_sizes, nbr_input):
@@ -49,6 +50,7 @@ class Neural_network:
                 raise TypeError("In 'Neural_network.init_random' : list_sizes should only contain integers.")
         if not isinstance(nbr_input, int):
             raise TypeError("In 'Neural_network.init_random' : argument 'nbr_input' should be an integer")
+        
         list_layers = []
         cur_nbr_input = nbr_input   # needed to make every layer take the same number
                                     # of input that the previous layer had neurons

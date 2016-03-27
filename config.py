@@ -20,7 +20,7 @@ NB_TURN_GENERATION = 90
 FILE_RES = open("res.data", 'w')
 LIST_SIZES = [4]
 NBR_INPUT = 8
-NO_MURDER = 1
+NO_MURDER = 0
 
 
 # GLOBAL VARIABLES #################################################################
