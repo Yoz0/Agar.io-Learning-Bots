@@ -3,7 +3,8 @@ from config import *
 from useful import *
 from copy import *
 from layer import *
-from neural_network import *
+from neuralnetwork import *
+
 
 class Bot(metaclass=ABCMeta):
     """
@@ -20,13 +21,15 @@ class Bot(metaclass=ABCMeta):
         self.name = name
         self.brain = brain
         self.strength = 0
+        self.i = None
+        self.j = None
         self.sprite = None
         self.list_input = None      # list of inputs gathered every turn with update_input()
         self.list_output = None     # list of outputs computed every turn with update_output()
 
     @staticmethod
     def quick_init(name="unnamed"):
-        return Bot(Neural_network.quick_init(), name)
+        return Bot(NeuralNetwork.quick_init(), name)
 
     def __str__(self):
         return self.name + " Strength: " + str(self.strength)
@@ -66,7 +69,7 @@ class Bot(metaclass=ABCMeta):
         canvas.delete(self.sprite)
 
     @abstractmethod
-    def update(self):
+    def update(self, list_bot, list_gem):
         """
         Compute the input
         Calculate the output
@@ -76,7 +79,7 @@ class Bot(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update_input(self):
+    def update_input(self, list_bot, list_gem):
         """
         Updates the bot's 'list_input' from what he can see of his environement
         """

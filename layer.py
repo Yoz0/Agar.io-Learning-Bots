@@ -18,19 +18,21 @@ class Layer:
         Inits a layer from a list of existing neuron.
         All neurons have to take the same number of input.
         """
-        #check if arg1 is a list of neurons
+        # check if arg1 is a list of neurons
         for a in list_neuron:
             if not isinstance(a, Neuron):
-                raise TypeError("In 'Layer.__init__()' : The list you provided does not only contain neurons. It should.")
-        #method 2
+                raise TypeError("In 'Layer.__init__()' :"
+                                " The list you provided does not only contain neurons. It should.")
+        # method 2
         self.neurons = deepcopy(list_neuron)
         self.nbr_neuron = len(self.neurons)
         self.nbr_input = self.neurons[0].nbr_input
 
-        #check if every neuron has the same number of input
+        # check if every neuron has the same number of input
         for neuron in self.neurons:
             if neuron.nbr_input != self.nbr_input:
-                raise ValueError("In 'Layer.__init__()' : the neurons you provided do not all take the same number of input.\n")
+                raise ValueError("In 'Layer.__init__()' :"
+                                 " the neurons you provided do not all take the same number of input.\n")
 
     @staticmethod
     def random_init(nbr_neuron, nbr_input):
@@ -53,11 +55,11 @@ class Layer:
         the result of each neuron in form of a list.
         """
 
-        #protection
-        if(len(list_input) != self.nbr_input):
+        # protection
+        if len(list_input) != self.nbr_input:
             raise ValueError("In Layer.output() (id : " + str(id(self)) + " : list_input has wrong size.\n")
 
-        #calculation
+        # calculation
         output = []
         for neuron in self.neurons:
             output.append(neuron.output(list_input))
@@ -72,13 +74,13 @@ class Layer:
         level 3 : for each neuron, changes one of its weight randomly
         """
 
-        if(level == 1):
+        if level == 1:
             i = randrange(self.nbr_input)
             self.neurons[i].mutation()
-        elif(level == 2):
+        elif level == 2:
             i = randrange(self.nbr_input)
             self.neurons[i] = Neuron(self.nbr_input)
-        elif(level == 3):
+        elif level == 3:
             for neuron in self.neurons:
                 neuron.mutation()
         else:
@@ -90,26 +92,25 @@ class Layer:
             for i in range(self.nbr_input):
                 res += str(neuron.list_weight[i]) + "\n"
             res += "\n"
-
         return res
 
-    #The following functions were created in order to meet python's protocol for
-    #sequences. (protocol = interface in python)
-    #with the following function, 'Layer' will act as a "sequence" (like a list)
-    #of neurons. eg: 'for neurons in layer:'
+    # The following functions were created in order to meet python's protocol for
+    # sequences. (protocol = interface in python)
+    # with the following function, 'Layer' will act as a "sequence" (like a list)
+    # of neurons. eg: 'for neurons in layer:'
     def __len__(self):
         """called when len() is called on a Layer object"""
         return self.nbr_neuron
 
     def __getitem__(self, key):
         """called when you use the 'object[key]' notation"""
-        if(key >= self.nbr_neuron):
+        if key >= self.nbr_neuron:
             raise ValueError("in 'Layer.__getitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.\n")
         return self.neurons[key]
 
     def __setitem__(self, key, value):
         """called when you use the 'object[key] = value' notation"""
-        if(key >= self.nbr_neuron):
+        if key >= self.nbr_neuron:
             raise ValueError("in 'Layer.__setitem__()' : No such neuron. There is only " + str(nbr_neuron) + ", you asked for 'layer[" + str(key) + "]'.\n")
         if isinstance(value, Neuron):
             raise TypeError("in 'Layer.__setitem__()' : layer only contains Neurons, not " + str(type(value)) + "s.\n")

@@ -2,9 +2,9 @@
 file: utility.py
 This file holds usefull functions that can be reused in other programms
 """
-
 from random import randrange
 from config import *
+
 
 def max_index(list_int):
     """
@@ -18,6 +18,7 @@ def max_index(list_int):
             i_max = i
             maxi = list_int[i]
     return i_max
+
 
 def int_to_color(strength):
     """
@@ -36,6 +37,7 @@ def int_to_color(strength):
         else:
             res += hex(i)[-2:].upper()
     return res
+
 
 def random_color():
         red = randrange(255)

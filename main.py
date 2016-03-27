@@ -2,7 +2,7 @@ from random import random, randrange
 from copy import *
 from config import *
 from neuron import *
-from bot_v1 import *
+from botv1 import *
 from gem import *
 
 
@@ -57,6 +57,7 @@ def bot_sort(list_of_bots):
                 list_of_bots[temp], list_of_bots[temp - 1] = list_of_bots[temp - 1], list_of_bots[temp]
                 temp -= 1
 
+
 # Generate a new level
 def generate_gem(list_gem):
     """
@@ -95,33 +96,26 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     resets the board for the bot of the next gen to play with. The mean strengh
     of the best bots of the current generation is saved in the file 'FILE_RES'.
     """
-    global turn
-    global generation
-
+    global turn, generation
     nbr_alive = len(list_bot)
     nbr_gems_remaining = len(list_gem)
-
-    #gather every bot
+    # gather every bot
     list_bot += list_dead_bot
-
-    #empty list of dead bots
+    # empty list of dead bots
     list_dead_bot.clear()
-
-    #remove everyone from display
+    # remove everyone from display
     for bot in list_bot:
         bot.erase()
-
-    #select the best NB_SELECT_BOT
+    # select the best NB_SELECT_BOT
     best = selection(list_bot, NB_SELECT_BOT)
     print("\nbest bots :")
     for bot in best:
         print(str(bot))
-        #calculate and print mean
-    sum = 0
+    # calculate and print mean
+    sum_mean = 0
     for bot in best:
-        sum += bot.strength
-
-    mean = sum/NB_SELECT_BOT
+        sum_mean += bot.strength
+    mean = sum_mean / NB_SELECT_BOT
     alive_percent = (nbr_alive/NBR_BOT)*100 
     gems_eaten_percent = ((NBR_GEMS-nbr_gems_remaining)/NBR_GEMS)*100
     print("Mean strength: " + str(mean))
@@ -130,25 +124,19 @@ def new_generation(list_bot, list_gem, list_dead_bot):
     FILE_RES.write(str(mean) + " " +
                    str(alive_percent) + " " +
                    str(gems_eaten_percent) + "\n")
-
-    #clear the list_bot
+    # clear the list_bot
     list_bot.clear()
-
-    #mate the best bots
+    # mate the best bots
     mating_list = get_mating_list(best, NBR_BOT)
-
-    #crossover the bots
+    # crossover the bots
     generation += 1
     for i, (b1, b2) in enumerate(mating_list):
         list_bot.append(b1.mate_with(b2, str(generation) + "th_gen_" + str(i)))
-
     generation_text.configure(text="Generation : " + str(generation))
     generation_text.update()
     turn = 0
-
-    #generate a new set of gems
+    # generate a new set of gems
     generate_gem(list_gem)
-
     place_bots_in_line(list_bot)
 
 
@@ -209,6 +197,7 @@ def trigger_game():
     global entry_speed
     game(list_bot, list_gem, list_dead_bot, entry_speed)
 
+
 def game(list_bot, list_gem, list_dead_bot, entry_speed):
     """
     Updates the bots in 'list_bot'.
@@ -218,28 +207,22 @@ def game(list_bot, list_gem, list_dead_bot, entry_speed):
     :param entry_speed: tkinter object of type Entry, the field that gives the
                          speed of time.
     """
-    global turn
-    global auto_gen
-
+    global turn, auto_gen
     turn += 1
     for bot in list_bot:
         bot.update(list_bot, list_gem)
     for bot in list_bot:
         bot.eat(list_bot, list_gem, list_dead_bot)
-
     if turn > NB_TURN_GENERATION and auto_gen == 1:
         trigger_new_generation()
-
     speed = entry_speed.get()
-
     if speed == "":
         speed = "1"
-
     speed = int(speed)
     if speed < 0:
         speed = 1
-
     root.after(1000 // speed, trigger_game)
+
 
 # Creation of the graphic interface
 frame_left = tk.Frame(root)
@@ -282,7 +265,7 @@ if __name__ == '__main__':
     list_gem = []
     generate_gem(list_gem)
     for i in range(NBR_BOT):
-        list_bot.append(Bot_v1.quick_init(name=str(generation) + "th_gen_" + str(i)))
+        list_bot.append(BotV1.quick_init(name=str(generation) + "th_gen_" + str(i)))
     place_bots_in_line(list_bot)
     game(list_bot, list_gem, list_dead_bot, entry_speed)
     root.mainloop()

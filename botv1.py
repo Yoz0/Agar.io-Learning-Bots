@@ -1,12 +1,13 @@
 from gem import *
 from neuron import *
 from layer import *
-from neural_network import *
+from neuralnetwork import *
 from useful import *
 from config import *
 from bot import *
 
-class Bot_v1(Bot):
+
+class BotV1(Bot):
     """
     This is a bot.
     """
@@ -15,19 +16,15 @@ class Bot_v1(Bot):
         """
         inits a bot whose brain is made of a neural network.
         """
-
-        self.name = name
-        self.brain = brain
+        super(BotV1, self).__init__(brain, name)
         self.i = i
         self.j = j
-        self.strength = 0
         self.list_input = [0 for i in range(8)] #this is hardcoded because we're in bot_v1
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
-        self.sprite = None
 
     @staticmethod
     def quick_init(i=0, j=0, name="unnamed"):
-        return Bot_v1(Neural_network.quick_init(), i, j, name)
+        return BotV1(NeuralNetwork.quick_init(), i, j, name)
 
     def mate_with(self, bot2, name="unnamed"):
         """
@@ -40,7 +37,7 @@ class Bot_v1(Bot):
                  neurons from bot 1 as bot 2.
         """
 
-        bot3 = Bot_v1(self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
+        bot3 = BotV1(self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
 
         return bot3
 
@@ -154,7 +151,7 @@ class Bot_v1(Bot):
         if not NO_MURDER:
             foe = self.detect_foe(self.i, self.j, list_bot)
             if foe is not None:
-                if(foe.strength <= self.strength):
+                if foe.strength <= self.strength:
                     for i in range(5):
                         if self.strength+1 <= MAX_STRENGTH:
                             self.strength += 1
