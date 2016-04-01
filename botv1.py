@@ -142,24 +142,3 @@ class BotV1(Bot):
             self.i -= 1
         elif i_max == 3 and self.i < WIDTH-1:
             self.i += 1
-
-    def eat(self, list_bot, list_gem, list_dead_bot):
-        """
-        Check if there is a weaker foe or a Gem at my location, if so, eat it!
-        """
-        gem = Gem.detect_gem(self.i, self.j, list_gem)
-        if gem is not None:
-            if self.strength < MAX_STRENGTH:
-                self.strength += 1
-            gem.erase()
-            list_gem.remove(gem)
-        if not NO_MURDER:
-            foe = self.detect_foe(self.i, self.j, list_bot)
-            if foe is not None:
-                if foe.strength <= self.strength:
-                    for i in range(5):
-                        if self.strength+1 <= MAX_STRENGTH:
-                            self.strength += 1
-                    foe.erase()
-                    list_dead_bot.append(foe)
-                    list_bot.remove(foe)

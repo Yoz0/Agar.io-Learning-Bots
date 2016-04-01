@@ -51,9 +51,9 @@ class GameV1:
         self.turn += 1
         for bot in self.list_bot:
             bot.update(self.list_bot, self.list_gem)
-        for bot in self.list_bot:
-            bot.eat(self.list_bot, self.list_gem, self.list_dead_bot)
-
+        # for bot in self.list_bot:
+        #    bot.eat(self.list_bot, self.list_gem, self.list_dead_bot)
+        self.collision()
         if self.turn > NB_TURN_GENERATION and self.auto_gen == 1:
             self.new_generation()
 
@@ -99,6 +99,34 @@ class GameV1:
         self.generate_gem()
 
         self.place_bots_in_line()
+
+    def collision(self):
+        for bot1 in self.list_bot:
+            for bot2 in self.list_bot:
+                if bot1 != bot2 and bot1.i == bot2.i and bot1.j == bot2.j:
+                    self.collide_bot_bot(bot1, bot2)
+            for gem in self.list_gem:
+                if bot1.i == gem.i and bot1.j == gem.j:
+                    self.collide_bot_gem(bot1, gem)
+
+    def collide_bot_bot(self, bot1, bot2):
+        if bot1.strength < bot2.strength:
+            bot1.erase()
+            self.list_bot.remove(bot1)
+            self.list_dead_bot.append(bot1)
+            bot2.inc_strength(5)
+        elif bot1.strength > bot2.strength:
+            bot2.erase()
+            self.list_bot.remove(bot2)
+            self.list_dead_bot.append(bot2)
+            bot1.inc_strength(5)
+        else:
+            pass
+
+    def collide_bot_gem(self, bot, gem):
+        gem.erase()
+        self.list_gem.remove(gem)
+        bot.inc_strength(1)
 
     def gen_info(self, best, nbr_alive, nbr_gems_remaining):
         print("\nbest bots :")
@@ -169,7 +197,6 @@ class GameV1:
         self.entry_speed.pack()
         self.entry_speed.delete(0, tk.END)
         self.entry_speed.insert(0, str(DEFAULT_SPEED))
-        
 
     def generate_gem(self):
         """

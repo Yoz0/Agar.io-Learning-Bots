@@ -96,6 +96,18 @@ class Bot(metaclass=ABCMeta):
     def move(self):
         """Checks which output is the "most activated" (which is higher), and
         moves accordingly"""
+        pass
+
+    def inc_strength(self, incr):
+        """
+        increment the strength of the bot
+        :param incr: how much we should increment the strength
+        """
+        if self.strength + incr < MAX_STRENGTH:
+            self.strength += incr
+        else:
+            self.strength = MAX_STRENGTH
+
 
 def bot_sort(list_of_bots):
     """
