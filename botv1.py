@@ -12,19 +12,24 @@ class BotV1(Bot):
     This is a bot.
     """
 
-    def __init__(self, brain, i, j, name="unnamed"):
+    def __init__(self, canvas, brain, i, j, name="unnamed"):
         """
         inits a bot whose brain is made of a neural network.
         """
-        super(BotV1, self).__init__(brain, name)
+
+        if not isinstance(brain, NeuralNetwork):
+            raise TypeError("in 'BotV1.__init()': you have not given a neural network as brain.")
+
+        super(BotV1, self).__init__(canvas, brain, name)
+        self.canvas = canvas
         self.i = i
         self.j = j
         self.list_input = [0 for i in range(8)] #this is hardcoded because we're in bot_v1
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
 
     @staticmethod
-    def quick_init(i=0, j=0, name="unnamed"):
-        return BotV1(NeuralNetwork.quick_init(), i, j, name)
+    def quick_init(canvas, i=0, j=0, name="unnamed"):
+        return BotV1(canvas, NeuralNetwork.quick_init(), i, j, name)
 
     def mate_with(self, bot2, name="unnamed"):
         """
@@ -37,7 +42,7 @@ class BotV1(Bot):
                  neurons from bot 1 as bot 2.
         """
 
-        bot3 = BotV1(self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
+        bot3 = BotV1(self.canvas, self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
 
         return bot3
 

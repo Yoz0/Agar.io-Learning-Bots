@@ -6,19 +6,24 @@ class Gem:
     """
     This is a gem
     """
-    def __init__(self, i, j):
+    def __init__(self, i, j, canvas):
         self.i = i
         self.j = j
         self.marge = 2
-        self.sprite = canvas.create_rectangle(self.i * SQUARE_SIZE + self.marge, self.j * SQUARE_SIZE + self.marge,
-                                         (self.i + 1) * SQUARE_SIZE - self.marge, (self.j+1) * SQUARE_SIZE - self.marge,
-                                         fill=random_color())
+        self.canvas = canvas
+        self.sprite = canvas.create_rectangle(
+            self.i * SQUARE_SIZE + self.marge,
+            self.j * SQUARE_SIZE + self.marge,
+            (self.i + 1) * SQUARE_SIZE - self.marge,
+            (self.j+1) * SQUARE_SIZE - self.marge,
+            fill=random_color()
+        )
 
     def erase(self):
         """
         Erase the sprite from the canvas
         """
-        canvas.delete(self.sprite)
+        self.canvas.delete(self.sprite)
 
     @staticmethod
     def detect_gem(i, j, list_gem):

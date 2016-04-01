@@ -20,14 +20,14 @@ def max_index(list_int):
     return i_max
 
 
-def int_to_color(strength):
+def int_to_color(strength, max):
     """
-    :param strength: a number between 0 and 'MAX_STRENGTH'
+    :param strength: a number between 0 and 'max'
     :return: a string like "#RRGGBB" which can be interpreted as a color
     (the higher the strength is, the reder the color is)
     """
 
-    red = strength * 255 // MAX_STRENGTH
+    red = strength * 255 // max
     blue = 255 - red
     green = 0
     res = "#"

@@ -13,7 +13,7 @@ class Bot(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def __init__(self, brain, name="unnamed"):
+    def __init__(self, canvas, brain, name="unnamed"):
         """
         inits a bot whose brain is made of a neural network.
         """
@@ -28,8 +28,8 @@ class Bot(metaclass=ABCMeta):
         self.list_output = None     # list of outputs computed every turn with update_output()
 
     @staticmethod
-    def quick_init(name="unnamed"):
-        return Bot(NeuralNetwork.quick_init(), name)
+    def quick_init(canvas, name="unnamed"):
+        return Bot(NeuralNetwork.quick_init(), canvas, name)
 
     def __str__(self):
         return self.name + " Strength: " + str(self.strength)
@@ -57,16 +57,16 @@ class Bot(metaclass=ABCMeta):
         Display the bot at the position i;j on the canvas.
         Canvas should be a global variable.
         """
-        canvas.delete(self.sprite)
-        self.sprite = canvas.create_oval(self.i * SQUARE_SIZE, self.j * SQUARE_SIZE,
+        self.canvas.delete(self.sprite)
+        self.sprite = self.canvas.create_oval(self.i * SQUARE_SIZE, self.j * SQUARE_SIZE,
                                          (self.i + 1) * SQUARE_SIZE, (self.j+1) * SQUARE_SIZE,
-                                         fill=int_to_color(self.strength))
+                                         fill=int_to_color(self.strength, MAX_STRENGTH))
 
     def erase(self):
         """
         Erase the sprite from canvas
         """
-        canvas.delete(self.sprite)
+        self.canvas.delete(self.sprite)
 
     @abstractmethod
     def update(self, list_bot, list_gem):
@@ -97,3 +97,15 @@ class Bot(metaclass=ABCMeta):
         """Checks which output is the "most activated" (which is higher), and
         moves accordingly"""
 
+def bot_sort(list_of_bots):
+    """
+    Sorts 'list_of_bots' with strength decreasing.
+    :param list_of_bots: list of bots to sort
+    """
+    for i in range(len(list_of_bots)-1):
+        if list_of_bots[i].strength < list_of_bots[i+1].strength:
+            list_of_bots[i], list_of_bots[i + 1] = list_of_bots[i + 1], list_of_bots[i]
+            temp = i
+            while temp > 0 and list_of_bots[temp].strength > list_of_bots[temp-1].strength:
+                list_of_bots[temp], list_of_bots[temp - 1] = list_of_bots[temp - 1], list_of_bots[temp]
+                temp -= 1
