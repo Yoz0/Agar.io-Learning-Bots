@@ -26,10 +26,6 @@ class Bot(metaclass=ABCMeta):
         self.list_input = None      # list of inputs gathered every turn with update_input()
         self.list_output = None     # list of outputs computed every turn with update_output()
 
-    @staticmethod
-    def quick_init(canvas, name="unnamed"):
-        return Bot(NeuralNetwork.quick_init(), canvas, name)
-
     def __str__(self):
         return self.name + " Strength: " + str(self.strength)
 
