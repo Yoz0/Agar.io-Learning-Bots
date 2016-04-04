@@ -36,7 +36,7 @@ class NeuralNetwork:
         self.nbr_output = len(list_layers[-1])  # list[-1] -> last element of list
 
     @staticmethod
-    def random_init(list_sizes, nbr_input):
+    def quick_init(list_sizes, nbr_input):
         """
         Usage : my_net = NeuralNetwork.random_init(list_sizes, nbr_input)
         Inits a neural network that has 'len(list_sizes)' layers, their respective
@@ -58,10 +58,6 @@ class NeuralNetwork:
         for i in range(len(list_sizes)):
             list_layers.append(Layer.random_init(list_sizes[i], cur_nbr_input))
         return NeuralNetwork(list_layers)
-
-    @staticmethod
-    def quick_init():
-        return NeuralNetwork.random_init(LIST_SIZES, NBR_INPUT)
 
     def get_output(self, inputs):
         """

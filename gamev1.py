@@ -18,7 +18,7 @@ class GameV1:
         self.turn = 0       # counts the number of frames passed since a new generation
         self.auto_gen = 1   # 1 if the generations shall pass automatically
         self.speed = DEFAULT_SPEED    # speed of time
-        
+
         # init gems
         self.list_gem = []
         self.list_gem_sprite = []
@@ -35,7 +35,7 @@ class GameV1:
 
         # tell tk to launch trigger_game in a while
         self.root.after(1000 // self.speed, self.game)
-        
+
         self.root.mainloop()
 
     def game(self):
@@ -132,14 +132,14 @@ class GameV1:
         print("\nbest bots :")
         for bot in best:
             print(str(bot))
-        
+
         #calculate mean
         sum = 0
         for bot in best:
             sum += bot.strength
 
         mean = sum/NB_SELECT_BOT
-        alive_percent = (nbr_alive/NBR_BOT)*100 
+        alive_percent = (nbr_alive/NBR_BOT)*100
         gems_eaten_percent = ((NBR_GEMS-nbr_gems_remaining)/NBR_GEMS)*100
 
         print("Mean strength: " + str(mean))
