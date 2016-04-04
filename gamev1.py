@@ -4,8 +4,8 @@ from botv1 import BotV1
 from gem import Gem
 from random import randrange
 from copy import deepcopy
-
 from config import *
+
 
 class GameV1:
     def __init__(self):
@@ -177,7 +177,7 @@ class GameV1:
         self.frame_right.pack(side = "right")
 
         #left widgets
-        self.quit_button = tk.Button(self.frame_left, text="QUIT", fg="red", command=quit)
+        self.quit_button = tk.Button(self.frame_left, text="QUIT", fg="red", command=self.quit)
         self.quit_button.pack()
         self.generation_button = tk.Button(self.frame_left, text="New Generation", command=self.new_generation)
         self.generation_button.pack()
@@ -254,14 +254,14 @@ class GameV1:
         self.auto_gen = not self.auto_gen
 
     def save_net(self):
-        i = randrange(len(list_bot))
-        self.file_net.write(str(list_bot[i].brain))
+        i = randrange(len(self.list_bot))
+        self.file_net.write(str(self.list_bot[i].brain))
         print("The neural net of a bot randomly choosen has been saved.")
 
     def quit(self):
-        self.root.destroy()
         self.file_res.close()
         self.file_net.close()
+        self.root.destroy()
 
     # def display_gem(self):
     #     for sprite in self.list_gem_sprite:
