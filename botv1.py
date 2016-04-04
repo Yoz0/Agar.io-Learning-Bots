@@ -21,7 +21,6 @@ class BotV1(Bot):
             raise TypeError("in 'BotV1.__init()': you have not given a neural network as brain.")
 
         super(BotV1, self).__init__(canvas, brain, name)
-        self.canvas = canvas
         self.i = i
         self.j = j
         self.list_input = [0 for i in range(8)] #this is hardcoded because we're in bot_v1
@@ -45,18 +44,6 @@ class BotV1(Bot):
         bot3 = BotV1(self.canvas, self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
 
         return bot3
-
-    def update(self, list_bot, list_gem):
-        """
-        Compute the input
-        Calculate the output
-        Move according to the output
-        and update the display
-        """
-        self.update_input(list_bot, list_gem)
-        self.update_output()
-        self.move()
-        self.display()
 
     def update_input(self, list_bot, list_gem):
         """
@@ -98,21 +85,6 @@ class BotV1(Bot):
                     self.list_input[7] = 1
                 else:
                     self.list_input[7] = -1
-
-    def detect_foe(self, i, j, list_bot):
-        """
-        Detect if there is a foe (a bot different than me) at the location i, j
-        :param i: the line
-        :param j: the column
-        :return: the foe if there is one, None if not.
-        """
-        k = 0
-        while k < len(list_bot):
-            foe = list_bot[k]
-            if foe.i == i and foe.j == j and self != foe:
-                return foe
-            k += 1
-        return None
 
     def move(self):
         """

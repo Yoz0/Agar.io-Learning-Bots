@@ -20,6 +20,7 @@ class Bot(metaclass=ABCMeta):
 
         self.name = name
         self.brain = brain
+        self.canvas = canvas
         self.strength = 0
         self.i = None
         self.j = None
@@ -68,7 +69,6 @@ class Bot(metaclass=ABCMeta):
         """
         self.canvas.delete(self.sprite)
 
-    @abstractmethod
     def update(self, list_bot, list_gem):
         """
         Compute the input
@@ -76,7 +76,10 @@ class Bot(metaclass=ABCMeta):
         Move according to the output
         and update the display
         """
-        pass
+        self.update_input(list_bot, list_gem)
+        self.update_output()
+        self.move()
+        self.display()
 
     @abstractmethod
     def update_input(self, list_bot, list_gem):
@@ -84,6 +87,21 @@ class Bot(metaclass=ABCMeta):
         Updates the bot's 'list_input' from what he can see of his environement
         """
         pass
+
+    def detect_foe(self, i, j, list_bot):
+        """
+        Detect if there is a foe (a bot different than me) at the location i, j
+        :param i: the line
+        :param j: the column
+        :return: the foe if there is one, None if not.
+        """
+        k = 0
+        while k < len(list_bot):
+            foe = list_bot[k]
+            if foe.i == i and foe.j == j and self != foe:
+                return foe
+            k += 1
+        return None
 
     def update_output(self):
         """
