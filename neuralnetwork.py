@@ -142,6 +142,15 @@ class NeuralNetwork:
 
         return NeuralNetwork(list_layer_brain3)
 
+    def mutation(self, avg):
+        """
+        Mutate (or not) the neural network
+        :param avg: the avergae of brain who will be mutated if you call this function with a tons of neural network
+        :return:
+        """
+        for l in self.layers:
+            l.mutation(avg / len(self.layers))
+
     # The following functions were created in order to meet python's protocol for
     # sequences. (protocol = interface in python)
     # with the following function, 'NeuralNetwork' will act as a "sequence"

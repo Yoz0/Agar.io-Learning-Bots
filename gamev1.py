@@ -43,9 +43,6 @@ class GameV1:
         Updates the bots in 'list_bot'.
         Calls 'eat()' for each of them.
         And relaunches 'game()' after a little time.
-
-        :param entry_speed: tkinter object of type Entry, the field that gives the
-                             speed of time.
         """
 
         self.turn += 1
@@ -93,6 +90,10 @@ class GameV1:
         for i, (b1, b2) in enumerate(mating_list):
             self.list_bot.append(b1.mate_with(b2, str(self.generation) + "th_gen_" + str(i)))
 
+        # mutate the bots
+        for bot in self.list_bot:
+            bot.mutation(0.5)
+
         self.generation_text.configure(text="Generation : " + str(self.generation))
         self.generation_text.update()
 
@@ -133,7 +134,7 @@ class GameV1:
         for bot in best:
             print(str(bot))
 
-        #calculate mean
+        # calculate mean
         sum = 0
         for bot in best:
             sum += bot.strength
@@ -146,8 +147,8 @@ class GameV1:
         print("Remaining alive bots: " + str(alive_percent) + "%")
         print("Gems eaten: " + str(gems_eaten_percent) + "%")
         self.file_res.write(str(mean) + " " +
-                       str(alive_percent) + " " +
-                       str(gems_eaten_percent) + "\n")
+                            str(alive_percent) + " " +
+                            str(gems_eaten_percent) + "\n")
 
     def selection(self):
         """
@@ -256,7 +257,7 @@ class GameV1:
     def save_net(self):
         i = randrange(len(self.list_bot))
         self.file_net.write(str(self.list_bot[i].brain))
-        print("The neural net of a bot randomly choosen has been saved.")
+        print("The neural net of a bot randomly chosen has been saved.")
 
     def quit(self):
         self.file_res.close()

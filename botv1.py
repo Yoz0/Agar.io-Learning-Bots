@@ -48,10 +48,16 @@ class BotV1(Bot):
         :return: a new bot with, on each layer of his neural network, as many
                  neurons from bot 1 as bot 2.
         """
-
         bot3 = BotV1(self.canvas, self.brain.crossover(bot2.brain), randrange(WIDTH), randrange(HEIGHT), name)
-
         return bot3
+
+    def mutation(self, avg):
+        """
+        Mutate (or not) the bot
+        :param avg: the avergae of bot who will be mutated if you call this function with a tons of bot
+        :return:
+        """
+        self.brain.mutation(avg)
 
     def update_input(self, list_bot, list_gem):
         """

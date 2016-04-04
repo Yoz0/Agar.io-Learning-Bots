@@ -44,9 +44,10 @@ class Neuron:
             res += self.list_weight[i] * list_input[i]
         return 1 / (1 + exp(-res))
 
-    def mutation(self):
+    def mutation(self, avg):
         """
-        Change randomly one weight of this neuron
+        Change randomly weights of this neuron
         """
-        i = randrange(self.nbr_input)
-        self.list_weight[i] = Neuron.random_weight()
+        for i in range(len(self.list_weight)):
+            if random() < avg:
+                self.list_weight[i] = self.random_weight()

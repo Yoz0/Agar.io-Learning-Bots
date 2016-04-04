@@ -66,25 +66,13 @@ class Layer:
 
         return output
 
-    def mutate(self, level):
+    def mutation(self, avg):
         """
         randomly changes weights of neurons.
-        level 1 : chooses one neuron randomly and changes one of its weight randomly
-        level 2 : chooses one neuron randomly and resets it.
-        level 3 : for each neuron, changes one of its weight randomly
+        :param avg: The avg of neurons that will be mutated
         """
-
-        if level == 1:
-            i = randrange(self.nbr_input)
-            self.neurons[i].mutation()
-        elif level == 2:
-            i = randrange(self.nbr_input)
-            self.neurons[i] = Neuron(self.nbr_input)
-        elif level == 3:
-            for neuron in self.neurons:
-                neuron.mutation()
-        else:
-            raise ValueError("In Layer.mutate() (id : " + str(id(self)) + " : given level unknown.\n")
+        for neuron in self.neurons:
+            neuron.mutation(avg / len(self.neurons))
 
     def __repr__(self):
         res = ""
