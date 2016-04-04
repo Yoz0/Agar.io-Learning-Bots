@@ -28,7 +28,15 @@ class BotV1(Bot):
 
     @staticmethod
     def quick_init(canvas, i=0, j=0, name="unnamed"):
-        return BotV1(canvas, NeuralNetwork.quick_init(), i, j, name)
+        """
+        Returns a bot whose brain was inited with random weights
+        """
+        # the 'list_sizes' and 'nbr_inputs' args of 'NeuralNetwork.quick_init()' are
+        # hardcoded because botv1 should always have a brain with this structure.
+        return BotV1(canvas,
+                     NeuralNetwork.quick_init([4], 8),
+                     i, j,
+                     name)
 
     def mate_with(self, bot2, name="unnamed"):
         """
@@ -60,31 +68,30 @@ class BotV1(Bot):
         if Gem.detect_gem(self.i + 1, self.j, list_gem) is not None:
             self.list_input[3] = 1
 
-        if not NO_MURDER:
-            foe = self.detect_foe(self.i, self.j - 1, list_bot)
-            if foe is not None:
-                if foe.strength < self.strength:
-                    self.list_input[4] = 1
-                else:
-                    self.list_input[4] = -1
-            foe = self.detect_foe(self.i, self.j + 1, list_bot)
-            if foe is not None:
-                if foe.strength < self.strength:
-                    self.list_input[5] = 1
-                else:
-                    self.list_input[5] = -1
-            foe = self.detect_foe(self.i - 1, self.j, list_bot)
-            if foe is not None:
-                if foe.strength < self.strength:
-                    self.list_input[6] = 1
-                else:
-                    self.list_input[6] = -1
-            foe = self.detect_foe(self.i + 1, self.j, list_bot)
-            if foe is not None:
-                if foe.strength < self.strength:
-                    self.list_input[7] = 1
-                else:
-                    self.list_input[7] = -1
+        foe = self.detect_foe(self.i, self.j - 1, list_bot)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[4] = 1
+            else:
+                self.list_input[4] = -1
+        foe = self.detect_foe(self.i, self.j + 1, list_bot)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[5] = 1
+            else:
+                self.list_input[5] = -1
+        foe = self.detect_foe(self.i - 1, self.j, list_bot)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[6] = 1
+            else:
+                self.list_input[6] = -1
+        foe = self.detect_foe(self.i + 1, self.j, list_bot)
+        if foe is not None:
+            if foe.strength < self.strength:
+                self.list_input[7] = 1
+            else:
+                self.list_input[7] = -1
 
     def move(self):
         """
