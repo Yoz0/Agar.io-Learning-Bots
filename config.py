@@ -1,8 +1,6 @@
 """
 file: config.py
-This file holds configuration options,
-it also holds the initialisation of global variables
-This file has to be imported in other modules 
+This file holds configuration options common to gamev1 and botv1
 """
 
 import tkinter as tk
@@ -24,6 +22,3 @@ NB_TURN_GENERATION = 90     # number of turns to pass after a new generation is 
                             
 SQUARE_SIZE = 10
 
-LIST_SIZES = [4]
-NBR_INPUT = 8
-NO_MURDER = 0

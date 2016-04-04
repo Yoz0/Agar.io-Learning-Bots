@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from config import *
 from useful import *
 from copy import *
 from layer import *
