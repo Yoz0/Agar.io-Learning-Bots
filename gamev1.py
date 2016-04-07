@@ -1,6 +1,5 @@
 import tkinter as tk
 from bot import bot_sort
-from botv1 import BotV1
 from gem import Gem
 from random import randrange
 from copy import deepcopy
@@ -8,12 +7,15 @@ from config import *
 
 
 class GameV1:
-    def __init__(self):
+    def __init__(self, bot_class):
+        """Inits a bot from the class 'bot_class'. 'bot_class' has to be
+        a child of 'Bot'."""
         self.file_res = open("res.data", 'w')
         self.file_net = open("net.data", 'w')
 
         self.init_UI()
 
+        self.bot_class = bot_class
         self.generation = 1
         self.turn = 0       # counts the number of frames passed since a new generation
         self.auto_gen = 1   # 1 if the generations shall pass automatically
@@ -28,7 +30,7 @@ class GameV1:
         self.list_bot = []
         self.list_bot_sprite = []
         for i in range(NBR_BOT):
-            self.list_bot.append(BotV1.quick_init(self.canvas, name=str(self.generation) + "th_gen_" + str(i)))
+            self.list_bot.append(bot_class.quick_init(self.canvas, name=str(self.generation) + "th_gen_" + str(i)))
         self.place_bots_in_line()
 
         self.list_dead_bot = []

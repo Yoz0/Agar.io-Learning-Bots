@@ -57,6 +57,7 @@ class NeuralNetwork:
         # of input that the previous layer had neurons
         for i in range(len(list_sizes)):
             list_layers.append(Layer.random_init(list_sizes[i], cur_nbr_input))
+            cur_nbr_input = list_sizes[i]
         return NeuralNetwork(list_layers)
 
     def get_output(self, inputs):
