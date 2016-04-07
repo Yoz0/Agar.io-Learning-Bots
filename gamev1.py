@@ -3,6 +3,7 @@ from bot import bot_sort
 from gem import Gem
 from random import randrange
 from copy import deepcopy
+from time import sleep
 from config import *
 
 
@@ -36,7 +37,7 @@ class GameV1:
         self.list_dead_bot = []
 
         # tell tk to launch trigger_game in a while
-        self.root.after(1000 // self.speed, self.game)
+        self.root.after(1, self.game)
 
         self.root.mainloop()
 
@@ -47,6 +48,11 @@ class GameV1:
         And relaunches 'game()' after a little time.
         """
 
+        self.update_speed()
+        if self.speed == 0:
+            self.root.after(1000, self.game)
+            return
+
         self.turn += 1
         for bot in self.list_bot:
             bot.update(self.list_bot, self.list_gem)
@@ -55,8 +61,6 @@ class GameV1:
         self.collision()
         if self.turn > NB_TURN_GENERATION and self.auto_gen == 1:
             self.new_generation()
-
-        self.update_speed()
 
         self.root.after(1000 // self.speed, self.game)
 
@@ -227,11 +231,11 @@ class GameV1:
         self.speed = self.entry_speed.get()
 
         if self.speed == "":
-            self.speed = "1"
+            self.speed = "0"
 
-        self.speed = int(self.speed)
-        if self.speed <= 0:
-            self.speed = 1
+        self.speed = int(float(self.speed))
+        if self.speed < 0:
+            self.speed = 0
 
     def get_mating_list(self, best):
         """

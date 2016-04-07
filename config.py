@@ -8,18 +8,15 @@ import tkinter as tk
 # CONFIGURATION OPTIONS RELATED TO GAME_V1
 # DISPLAY OPTIONS
 SQUARE_SIZE = 10
-WIDTH = 30      # in square
-HEIGHT = 30     # in square
+WIDTH = 60      # in square
+HEIGHT = 60     # in square
 MARGE = 2       # affects the way gems are displayed
 
 # GAME OPTIONS
-NBR_GEMS = 20              # number of gems to set on the board for every generation
-NBR_BOT = 10                # number of bots per generation
-DEFAULT_SPEED = 30                    # speed of time factor
+NBR_GEMS = 200              # number of gems to set on the board for every generation
+NBR_BOT = 30                # number of bots per generation
+DEFAULT_SPEED = 0          # default speed of time
 MAX_STRENGTH = 30           # maximum strength of a bot
 NB_SELECT_BOT = 5
 NB_TURN_GENERATION = 90     # number of turns to pass after a new generation is created
                             # (used when auto_gen is ON)
-                            
-
-
