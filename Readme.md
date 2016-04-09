@@ -10,6 +10,7 @@ Neural Network
 Each bots has layers [neural network](https://en.wikipedia.org/wiki/Artificial_neural_network).
 ###First Version
 * one layer of 4 Neurons.
+
 ####Inputs
 * Gem up (1 if there is, 0  if there isn't )
 * Gem down
@@ -29,6 +30,7 @@ Each bots has layers [neural network](https://en.wikipedia.org/wiki/Artificial_n
 ###Second Version
 * first layer : NBR_BOT+NBR_GEMS neurons
 * second layer : 4 neurons
+
 ####Inputs
 For each other bot
 * The difference (hisY - myY)
