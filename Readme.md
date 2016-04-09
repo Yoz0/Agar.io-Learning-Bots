@@ -7,9 +7,10 @@ but we changed some rules to facilitate the neural network approach. The bots mo
 
 Neural Network
 --------------
-Each bots has a one layer [neural network](https://en.wikipedia.org/wiki/Artificial_neural_network).
-The layer has 4 Neurons.
-###Inputs
+Each bots has layers [neural network](https://en.wikipedia.org/wiki/Artificial_neural_network).
+###First Version
+* one layer of 4 Neurons.
+####Inputs
 * Gem up (1 if there is, 0  if there isn't )
 * Gem down
 * Gem left
@@ -19,15 +20,29 @@ The layer has 4 Neurons.
 * Foe left
 * Foe right
 
-###Outputs
+####Outputs
 * Go up
 * Go down
 * Go left
 * Go right
 
+###Second Version
+* first layer : NBR_BOT+NBR_GEMS neurons
+* second layer : 4 neurons
+####Inputs
+For each other bot
+* The difference (hisY - myY)
+* The difference (hisX - myX)
+* The distance between the bot and I (+ if I'm stronger, - if I'm weaker)
+For each gem
+* The difference (hisY - myY)
+* The difference (hisX - myX)
+* The distance between the gem and I
+
 Genetic Algorithm
 -----------------
-When the user hit the "New Generation" button, the program search for the 7 stronger bots (dead or alive) and create 21 new ones with
+When the user hit the "New Generation" button, the program search for the NB_SELECT_BOT stronger bots (dead or alive)
+ and create NBR_BOT new ones with
 [crossover](https://en.wikipedia.org/wiki/Crossover_%28genetic_algorithm%29) 
 and [mutation](https://en.wikipedia.org/wiki/Mutation_%28genetic_algorithm%29).
 
