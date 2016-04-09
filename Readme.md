@@ -36,6 +36,7 @@ For each other bot
 * The difference (hisY - myY)
 * The difference (hisX - myX)
 * The distance between the bot and I (+ if I'm stronger, - if I'm weaker)
+
 For each gem
 * The difference (hisY - myY)
 * The difference (hisX - myX)
