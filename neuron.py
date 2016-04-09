@@ -42,6 +42,7 @@ class Neuron:
         res = 0
         for i in range(self.nbr_input):
             res += self.list_weight[i] * list_input[i]
+        res = max(-500, min(500, res)) # This is to avoid range overflow error
         return 1 / (1 + exp(-res))
 
     def mutation(self, avg):

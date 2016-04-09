@@ -75,17 +75,17 @@ class BotV2(Bot):
             self.list_input.append(gem.i-self.i)
             self.list_input.append(gem.j-self.j)
             distance = sqrt((gem.i-self.i)**2 + (gem.j-self.j)**2)
-            self.list_input.append(distance)
+            self.list_input.append(int(distance))
 
         for bot in list_bot:
-            if(bot != self):
+            if bot != self:
                 self.list_input.append(bot.i-self.i)
                 self.list_input.append(bot.j-self.j)
                 distance = sqrt((gem.i-self.i)**2 + (gem.j-self.j)**2)
                 if(bot.strength > self.strength):
-                    self.list_input.append(-distance)
+                    self.list_input.append(int(-distance))
                 else:
-                    self.list_input.append(distance)
+                    self.list_input.append(int(distance))
 
         if len(self.list_input) > self.nbr_inputs:
             raise ValueError("In 'BotV2.update_input()' : too much objects. len(list_input) = " + str(len(self.list_input)))

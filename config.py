@@ -13,7 +13,7 @@ HEIGHT = 60     # in square
 MARGE = 2       # affects the way gems are displayed
 
 # GAME OPTIONS
-NBR_GEMS = 200              # number of gems to set on the board for every generation
+NBR_GEMS = 100              # number of gems to set on the board for every generation
 NBR_BOT = 30                # number of bots per generation
 DEFAULT_SPEED = 0          # default speed of time
 MAX_STRENGTH = 30           # maximum strength of a bot
