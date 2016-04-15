@@ -97,8 +97,9 @@ class GameV1:
             self.list_bot.append(b1.mate_with(b2, str(self.generation) + "th_gen_" + str(i)))
 
         # mutate the bots
-        for bot in self.list_bot:
-            bot.mutation(0.5)
+        if(MUTATION):
+            for bot in self.list_bot:
+                bot.mutation(0.5)
 
         self.generation_text.configure(text="Generation : " + str(self.generation))
         self.generation_text.update()

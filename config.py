@@ -20,3 +20,4 @@ MAX_STRENGTH = 30           # maximum strength of a bot
 NB_SELECT_BOT = 5
 NB_TURN_GENERATION = 90     # number of turns to pass after a new generation is created
                             # (used when auto_gen is ON)
+MUTATION = 0		# put to 1 to activate mutation
