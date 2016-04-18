@@ -110,26 +110,35 @@ class GameV1:
 
     def collision(self):
         for bot1 in self.list_bot:
-            for bot2 in self.list_bot:
-                if bot1 != bot2 and bot1.i == bot2.i and bot1.j == bot2.j:
-                    self.collide_bot_bot(bot1, bot2)
             for gem in self.list_gem:
                 if bot1.i == gem.i and bot1.j == gem.j:
                     self.collide_bot_gem(bot1, gem)
+            for bot2 in self.list_bot:
+                if bot1 != bot2 and bot1.i == bot2.i and bot1.j == bot2.j:
+                    if self.collide_bot_bot(bot1, bot2) == 1:
+                        # if bot1 has been deleted, there's no point in continuing
+                        # managing his collision
+                        break;
+
 
     def collide_bot_bot(self, bot1, bot2):
+        """Given that bot1 and bot2 are on the same cell of the grid, this function
+        kills the weaker one, and increases the other one's strengh.
+        returns 0, 1 or 2 if no bot was killed, bot1 was killed, or bot2 was killed"""
         if bot1.strength < bot2.strength:
             bot1.erase()
             self.list_bot.remove(bot1)
             self.list_dead_bot.append(bot1)
             bot2.inc_strength(5)
+            return 1
         elif bot1.strength > bot2.strength:
             bot2.erase()
             self.list_bot.remove(bot2)
             self.list_dead_bot.append(bot2)
             bot1.inc_strength(5)
+            return 2
         else:
-            pass
+            return 0
 
     def collide_bot_gem(self, bot, gem):
         gem.erase()
