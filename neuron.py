@@ -11,7 +11,7 @@ class Neuron:
         Inits a neuron that has list_weight as weights
         """
         self.list_weight = list_weight
-        self.nbr_input = len(self.list_weight)
+        self.nbr_input = len(self.list_weight)-1
 
     @staticmethod
     def random_init(nbr_input):
@@ -20,7 +20,7 @@ class Neuron:
         :param nbr_input: the number of inputs of the neuron
         :return: a Neuron
         """
-        return Neuron([Neuron.random_weight() for i in range(nbr_input)])
+        return Neuron([Neuron.random_weight() for i in range(nbr_input+1)])
 
     @staticmethod
     def random_weight():
@@ -37,11 +37,12 @@ class Neuron:
         :param list_input: a list of input (numbers). The length of this list should be the nbr_input entered at the creation
         :return: a positive number calculated from the input
         """
-        if len(list_input) != len(self.list_weight):
+        if len(list_input)+1 != len(self.list_weight):
             raise ValueError("In Neuron.output() the input you provided has not the good size")
         res = 0
         for i in range(self.nbr_input):
             res += self.list_weight[i] * list_input[i]
+        res += self.list_weight[i] * (random()*2-1) # Always add a random number
         res = max(-500, min(500, res)) # This is to avoid range overflow error
         return 1 / (1 + exp(-res))
 

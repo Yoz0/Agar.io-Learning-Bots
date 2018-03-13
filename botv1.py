@@ -23,7 +23,7 @@ class BotV1(Bot):
         super(BotV1, self).__init__(canvas, brain, name)
         self.i = i
         self.j = j
-        self.list_input = [0 for i in range(8)] #this is hardcoded because we're in bot_v1
+        self.list_input = [0 for i in range(12)] #this is hardcoded because we're in bot_v1
         self.list_output = [0, 0, 0, 0]  # up / down / left / right
 
     @staticmethod
@@ -34,7 +34,7 @@ class BotV1(Bot):
         # the 'list_sizes' and 'nbr_inputs' args of 'NeuralNetwork.quick_init()' are
         # hardcoded because botv1 should always have a brain with this structure.
         return BotV1(canvas,
-                     NeuralNetwork.quick_init([4], 8),
+                     NeuralNetwork.quick_init([4,4,4], 12),
                      i, j,
                      name)
 
@@ -98,6 +98,11 @@ class BotV1(Bot):
                 self.list_input[7] = 1
             else:
                 self.list_input[7] = -1
+
+        self.list_input[8] = ( 1 if self.j-1 <= 0 else 0)
+        self.list_input[9] = ( 1 if self.j+1 >= HEIGHT else 0)
+        self.list_input[10] = ( 1 if self.i-1 <= 0 else 0)
+        self.list_input[11] = ( 1 if self.i+1 >= WIDTH else 0)
 
     def move(self):
         """

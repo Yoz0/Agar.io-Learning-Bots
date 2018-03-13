@@ -32,7 +32,8 @@ class GameV1:
         self.list_bot_sprite = []
         for i in range(NBR_BOT):
             self.list_bot.append(bot_class.quick_init(self.canvas, name=str(self.generation) + "th_gen_" + str(i)))
-        self.place_bots_in_line()
+        #self.place_bots_in_line()
+        self.place_bots_randomly()
 
         self.list_dead_bot = []
 
@@ -106,7 +107,8 @@ class GameV1:
 
         self.generate_gem()
 
-        self.place_bots_in_line()
+        #self.place_bots_in_line()
+        self.place_bots_randomly()
 
     def collision(self):
         for bot1 in self.list_bot:
@@ -125,20 +127,21 @@ class GameV1:
         """Given that bot1 and bot2 are on the same cell of the grid, this function
         kills the weaker one, and increases the other one's strengh.
         returns 0, 1 or 2 if no bot was killed, bot1 was killed, or bot2 was killed"""
-        if bot1.strength < bot2.strength:
-            bot1.erase()
-            self.list_bot.remove(bot1)
-            self.list_dead_bot.append(bot1)
-            bot2.inc_strength(5)
-            return 1
-        elif bot1.strength > bot2.strength:
-            bot2.erase()
-            self.list_bot.remove(bot2)
-            self.list_dead_bot.append(bot2)
-            bot1.inc_strength(5)
-            return 2
-        else:
-            return 0
+        return 0
+       #if bot1.strength < bot2.strength:
+       #    bot1.erase()
+       #    self.list_bot.remove(bot1)
+       #    self.list_dead_bot.append(bot1)
+       #    bot2.inc_strength(1)
+       #    return 1
+       #elif bot1.strength > bot2.strength:
+       #    bot2.erase()
+       #    self.list_bot.remove(bot2)
+       #    self.list_dead_bot.append(bot2)
+       #    bot1.inc_strength(1)
+       #    return 2
+       #else:
+       #    return 0
 
     def collide_bot_gem(self, bot, gem):
         gem.erase()
@@ -236,6 +239,14 @@ class GameV1:
         for i, bot in enumerate(self.list_bot):
             bot.i = 2*i
             bot.j = HEIGHT-1
+
+    def place_bots_randomly(self):
+        """
+        Changes the position of every robot in 'self.list_bot' to a random location
+        """
+        for bot in self.list_bot:
+            bot.i = randrange(0,WIDTH)
+            bot.j = randrange(0,HEIGHT)
 
     def update_speed(self):
         self.speed = self.entry_speed.get()

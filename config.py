@@ -14,10 +14,10 @@ MARGE = 2       # affects the way gems are displayed
 
 # GAME OPTIONS
 NBR_GEMS = 100              # number of gems to set on the board for every generation
-NBR_BOT = 30                # number of bots per generation
+NBR_BOT = 20                # number of bots per generation
 DEFAULT_SPEED = 0          # default speed of time
-MAX_STRENGTH = 30           # maximum strength of a bot
-NB_SELECT_BOT = 5
-NB_TURN_GENERATION = 90     # number of turns to pass after a new generation is created
+MAX_STRENGTH = 80           # maximum strength of a bot
+NB_SELECT_BOT = 10
+NB_TURN_GENERATION = 300     # number of turns to pass after a new generation is created
                             # (used when auto_gen is ON)
-MUTATION = 0		# put to 1 to activate mutation
+MUTATION = 1		# put to 1 to activate mutation
